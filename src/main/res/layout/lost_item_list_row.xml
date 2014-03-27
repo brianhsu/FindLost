@@ -8,7 +8,23 @@
     android:layout_margin="15px"
     android:textSize="20dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="wrap_content" />
+
+  <TextView android:id="@+id/lostItemListDate" 
+    android:layout_marginTop="10px"
+    android:text="YYYY-mm-dd HH:ss"
+    android:gravity="right"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+
+  <TextView android:id="@+id/lostItemListLocation" 
+    android:layout_marginTop="10px"
+    android:layout_marginBottom="15px"
+    android:text="Location"
+    android:gravity="right"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
 
 </LinearLayout>
 

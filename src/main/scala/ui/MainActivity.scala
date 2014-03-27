@@ -7,8 +7,10 @@ import android.widget.BaseAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
+import android.widget.AdapterView
+import android.widget.BaseExpandableListAdapter
 
-class MyAdapter(context: Context, lostItems: List[LostItem]) extends BaseAdapter 
+class MyAdapter(context: Context, lostItems: List[LostItem]) extends BaseAdapter
 {
   import TypedResource._
 
@@ -23,8 +25,12 @@ class MyAdapter(context: Context, lostItems: List[LostItem]) extends BaseAdapter
       case null =>
         val newView = inflater.inflate(R.layout.lost_item_list_row, null)
         val rowTitle = newView.findView(TR.lostItemListTitle)
+        val rowDate = newView.findView(TR.lostItemListDate)
+        val rowLocation = newView.findView(TR.lostItemListLocation)
         val lostItem = lostItems(position)
         rowTitle.setText(lostItem.items)
+        rowDate.setText(lostItem.formatedDateTime)
+        rowLocation.setText(lostItem.location)
         newView
     }
   }
@@ -41,7 +47,6 @@ class MainActivity extends Activity with TypedViewHolder with AsyncUI
 
   private val Tag = "FindLost"
 
-
   override def onCreate(savedInstanceState: Bundle) 
   {
     super.onCreate(savedInstanceState)
@@ -54,9 +59,15 @@ class MainActivity extends Activity with TypedViewHolder with AsyncUI
     lostItems.onComplete {
       case Failure(e)    => Log.v(Tag, "Error occurs:" + e)
       case Success(list) => runOnUiThread {
-        Log.v(Tag, "onSucces..." + list.size)
         val listView = findView(TR.lostItemList)
+        val indicator = findView(TR.lostItemListLoadingIndicator)
         listView.setAdapter(new MyAdapter(this, list))
+        indicator.setVisibility(View.GONE)
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
+            Log.v(Tag, "Clicked...")
+          }
+        })
       }
     }
 

@@ -13,6 +13,16 @@ import android.util.Log
 case class LostItem(id: String, department: String, dateTime: String, 
                     location: String, description: String) 
 {
+  def formatedDateTime = {
+    val year = dateTime.substring(0,4)
+    val month = dateTime.substring(4, 6)
+    val day = dateTime.substring(6, 8)
+    val hour = dateTime.substring(8, 10)
+    val miniute = dateTime.substring(10, 12)
+
+    s"$year-$month-$day $hour:$miniute"
+  }
+
   def items = {
     description.replace("拾得人拾獲：", "").
                 replace("，請失主於公告期間六個月內攜帶本人印章及身分證件前來認領。", "").
@@ -55,7 +65,8 @@ object LostItem {
       throw IncorrectFormatException
     } else {
       val source = Source.fromInputStream(connection.getInputStream)("UTF-8")
-      source.getLines.flatMap(line => LostItem(line)).toList
+      val lostItems = source.getLines.flatMap(line => LostItem(line)).toList
+      lostItems.sortWith(_.dateTime > _.dateTime)
     }
 
   }
