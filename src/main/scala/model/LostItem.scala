@@ -4,19 +4,30 @@ import scala.io.Source
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import java.net.HttpURLConnection
+import java.net.URL
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import android.util.Log
+
 case class LostItem(id: String, department: String, dateTime: String, 
                     location: String, description: String) 
 {
   def items = {
     description.replace("拾得人拾獲：", "").
                 replace("，請失主於公告期間六個月內攜帶本人印章及身分證件前來認領。", "").
+                replace("，請失主於公告期間15日內攜帶本人印章及身分證件前來認領。", "").
+                replace("，請失主於公告期間內攜帶本人印章及身分證件前來認領。", "").
                 replace(".00", "")
   }
 }
 
 object LostItem {
 
-  val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV"
+  object IncorrectFormatException extends Exception("Incorrect format from data source URL")
+
+  val Tag = "FindLost"
+  val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
 
   def apply(line: String): Option[LostItem] = {
     line.split(",").toList match {
@@ -29,7 +40,23 @@ object LostItem {
   }
 
   def getDataFromNetwork: Future[List[LostItem]] = future {
-    val source = Source.fromURL(DataSourceURL)("UTF-8")
-    source.getLines.flatMap(line => LostItem.apply(line)).toList
+
+    var items: List[LostItem] = Nil
+    val url = new URL(DataSourceURL);
+    var connection = url.openConnection().asInstanceOf[HttpURLConnection]
+
+    connection.setReadTimeout(10000 /* milliseconds */)
+    connection.setConnectTimeout(15000 /* milliseconds */)
+    connection.setRequestMethod("GET")
+    connection.setDoInput(true)
+    connection.connect()
+
+    if (connection.getResponseCode == -1) {
+      throw IncorrectFormatException
+    } else {
+      val source = Source.fromInputStream(connection.getInputStream)("UTF-8")
+      source.getLines.flatMap(line => LostItem(line)).toList
+    }
+
   }
 }
