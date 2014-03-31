@@ -10,14 +10,19 @@ import android.widget.CheckBox
 
 import TypedResource._
 
-class GroupAdapter(context: Context, groups: List[Group]) extends BaseAdapter
+class GroupAdapter(context: Context, 
+                   lostItems: List[LostItem],
+                   groupingFunction: LostItem => String) extends 
+      BaseAdapter
 {
   case class GroupViewTag(title: TextView, checkBox: CheckBox)
 
   private lazy val inflater = LayoutInflater.from(context)
-  private var sortedGroup = groups.sortWith(_.title > _.title)
+  private lazy val groupedItems = lostItems.groupBy(groupingFunction)
+  private var sortedGroup = groupedItems.keySet.toVector.sortWith(_ > _).map(title => Group(title, false))
 
   def hasItemSelected = sortedGroup.exists(_.isSelected)
+
   def toggleState(position: Int, view: View) {
     val newState = sortedGroup(position).toggleState
     view.getTag.asInstanceOf[GroupViewTag].checkBox.setChecked(newState)

@@ -22,14 +22,15 @@ class MainActivity extends Activity with TypedViewHolder
   private lazy val indicator = findView(TR.lostItemListLoadingIndicator)
   private lazy val adapterHolder: Future[GroupAdapter] = initLoadingData()
 
+  def groupingFunction(lostItem: LostItem): String = lostItem.formatedDate
+
   def initLoadingData(): Future[GroupAdapter] = {
     val lostItemsFuture = LostItem.getDataFromNetwork recoverWith {
       case LostItem.IncorrectFormatException => LostItem.getDataFromNetwork
     }
 
     lostItemsFuture.map { lostItems =>
-      val dateGroup = lostItems.map(item => new Group(item.formatedDate, false)).distinct
-      new GroupAdapter(this, dateGroup)
+      new GroupAdapter(this, lostItems, groupingFunction _)
     }
   }
 
@@ -71,6 +72,9 @@ class MainActivity extends Activity with TypedViewHolder
   }
 
   def onActionShowDetailClicked(menuItem: MenuItem) {
+    adapterHolder.runOnUIThread { adapter =>
+      val selected = adapter
+    }
   }
 
   def setActionShowDetailEnabled(isEnabled: Boolean) {
