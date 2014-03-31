@@ -31,10 +31,9 @@ class MyAdapter(context: Context, groups: List[Group]) extends BaseAdapter
   private lazy val inflater = LayoutInflater.from(context)
   private var sortedGroup = groups.sortWith(_.title > _.title)
 
+  def hasItemSelected = sortedGroup.exists(_.isSelected)
   def toggleState(position: Int, view: View) {
-    Log.v("FindLost", s"before click on position:${position}, value:${sortedGroup(position)}")
     val newState = sortedGroup(position).toggleState
-    Log.v("FindLost", s"after click on position:${position}, value:${sortedGroup(position)}")
     view.getTag.asInstanceOf[ViewTag].checkBox.setChecked(newState)
   }
 
@@ -60,12 +59,22 @@ class MainActivity extends Activity with TypedViewHolder with AsyncUI
   import android.util.Log
   import scala.util.Failure
   import scala.util.Success
-
+  import android.view.Menu
+  import android.view.MenuItem
 
   private val Tag = "FindLost"
+  private var actionShowDetailHolder: Option[MenuItem] = None
 
-  override def onCreate(savedInstanceState: Bundle) 
-  {
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    val inflater = getMenuInflater
+    inflater.inflate(R.menu.main_activity_actions, menu)
+    actionShowDetailHolder = Option(menu.findItem(R.id.mainActivityActionShowDetail)).map(_.asInstanceOf[MenuItem])
+    setActionShowDetailEnabled(false)
+    super.onCreateOptionsMenu(menu)
+  }
+
+  override def onCreate(savedInstanceState: Bundle)  {
+
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
 
@@ -78,16 +87,27 @@ class MainActivity extends Activity with TypedViewHolder with AsyncUI
       case Success(list) => runOnUiThread {
         val listView = findView(TR.lostItemList)
         val indicator = findView(TR.lostItemListLoadingIndicator)
-        listView.setAdapter(new MyAdapter(this, list.map(x => new Group(x.formatedDate, false)).toList.distinct))
+        val dateGroup = list.map(x => new Group(x.formatedDate, false)).distinct
+        val adapter = new MyAdapter(this, dateGroup.distinct)
+
+        listView.setAdapter(adapter)
         indicator.setVisibility(View.GONE)
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
-            val adapter = listView.getAdapter.asInstanceOf[MyAdapter]
             adapter.toggleState(position, view)
+            setActionShowDetailEnabled(adapter.hasItemSelected)
           }
         })
       }
     }
+  }
 
+  def onActionShowDetailClicked(menuItem: MenuItem) {
+    Log.v(Tag, "on actionShowDetail clicked...")
+  }
+
+  def setActionShowDetailEnabled(isEnabled: Boolean) {
+    actionShowDetailHolder.foreach(_.setEnabled(isEnabled).setVisible(isEnabled))
   }
 }
