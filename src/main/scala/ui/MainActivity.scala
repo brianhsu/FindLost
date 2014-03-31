@@ -20,19 +20,20 @@ class MyAdapter(context: Context, lostItems: List[LostItem]) extends BaseAdapter
   override def getItem(position: Int): Object = lostItems(position)
   override def getItemId(position: Int): Long = position
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
-    convertView match {
-      case view: View => convertView
-      case null =>
-        val newView = inflater.inflate(R.layout.lost_item_list_row, null)
-        val rowTitle = newView.findView(TR.lostItemListTitle)
-        val rowDate = newView.findView(TR.lostItemListDate)
-        val rowLocation = newView.findView(TR.lostItemListLocation)
-        val lostItem = lostItems(position)
-        rowTitle.setText(lostItem.items)
-        rowDate.setText(lostItem.formatedDateTime)
-        rowLocation.setText(lostItem.location)
-        newView
+
+    val view = convertView match {
+      case reusedView: View => convertView
+      case _ => inflater.inflate(R.layout.lost_item_list_row, null)
     }
+
+    val rowTitle = view.findView(TR.lostItemListTitle)
+    val rowDate = view.findView(TR.lostItemListDate)
+    val rowLocation = view.findView(TR.lostItemListLocation)
+    val lostItem = lostItems(position)
+    rowTitle.setText(lostItem.items)
+    rowDate.setText(lostItem.formatedDateTime)
+    rowLocation.setText(lostItem.location)
+    view
   }
 }
 
