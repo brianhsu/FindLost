@@ -22,6 +22,10 @@ class GroupAdapter(context: Context,
   private var sortedGroup = groupedItems.keySet.toVector.sortWith(_ > _).map(title => Group(title, false))
 
   def hasItemSelected = sortedGroup.exists(_.isSelected)
+  def getSelectedItems: Vector[LostItem] = {
+    val selectedTitle = sortedGroup.filter(_.isSelected).map(_.title)
+    groupedItems.filterKeys(selectedTitle contains _).values.flatten.toVector
+  }
 
   def toggleState(position: Int, view: View) {
     val newState = sortedGroup(position).toggleState

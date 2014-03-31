@@ -73,7 +73,8 @@ class MainActivity extends Activity with TypedViewHolder
 
   def onActionShowDetailClicked(menuItem: MenuItem) {
     adapterHolder.runOnUIThread { adapter =>
-      val selected = adapter
+      val selected = adapter.getSelectedItems
+      android.widget.Toast.makeText(this, "size:" + selected.size, android.widget.Toast.LENGTH_LONG).show()
     }
   }
 
