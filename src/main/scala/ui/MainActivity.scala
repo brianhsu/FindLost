@@ -3,6 +3,7 @@ package org.bone.findlost
 import android.app.Activity
 import android.os.Bundle
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.view.Menu
 import android.view.MenuItem
@@ -73,8 +74,11 @@ class MainActivity extends Activity with TypedViewHolder
 
   def onActionShowDetailClicked(menuItem: MenuItem) {
     adapterHolder.runOnUIThread { adapter =>
-      val selected = adapter.getSelectedItems
-      android.widget.Toast.makeText(this, "size:" + selected.size, android.widget.Toast.LENGTH_LONG).show()
+      val selectedItems = adapter.getSelectedItems
+      android.widget.Toast.makeText(this, "size:" + selectedItems.size, android.widget.Toast.LENGTH_LONG).show()
+      val intent = new Intent(this, classOf[LostItemListActivity])
+      intent.putExtra("org.bone.findlost.lostItems", selectedItems)
+      startActivity(intent)
     }
   }
 
