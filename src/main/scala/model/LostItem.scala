@@ -13,6 +13,14 @@ import android.util.Log
 case class LostItem(id: String, department: String, dateTime: String, 
                     location: String, description: String) 
 {
+  def formatedDate = {
+    val year = dateTime.substring(0,4)
+    val month = dateTime.substring(4, 6)
+    val day = dateTime.substring(6, 8)
+    s"$year-$month-$day"
+  }
+
+
   def formatedDateTime = {
     val year = dateTime.substring(0,4)
     val month = dateTime.substring(4, 6)

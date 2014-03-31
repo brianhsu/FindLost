@@ -9,30 +9,46 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.widget.AdapterView
 import android.widget.BaseExpandableListAdapter
+import android.util.Log
 
-class MyAdapter(context: Context, lostItems: List[LostItem]) extends BaseAdapter
+case class Group(title: String, var isSelected: Boolean) {
+  def toggleState = {
+    isSelected = !isSelected
+    isSelected
+  }
+}
+
+class MyAdapter(context: Context, groups: List[Group]) extends BaseAdapter
 {
   import TypedResource._
+  import android.widget.CompoundButton.OnCheckedChangeListener
+  import android.widget.CompoundButton
+  import android.widget.TextView
+  import android.widget.CheckBox
+
+  case class ViewTag(title: TextView, checkBox: CheckBox)
 
   private lazy val inflater = LayoutInflater.from(context)
+  private var sortedGroup = groups.sortWith(_.title > _.title)
 
-  override def getCount: Int = lostItems.size
-  override def getItem(position: Int): Object = lostItems(position)
+  def toggleState(position: Int, view: View) {
+    Log.v("FindLost", s"before click on position:${position}, value:${sortedGroup(position)}")
+    val newState = sortedGroup(position).toggleState
+    Log.v("FindLost", s"after click on position:${position}, value:${sortedGroup(position)}")
+    view.getTag.asInstanceOf[ViewTag].checkBox.setChecked(newState)
+  }
+
+  override def getCount: Int = sortedGroup.size
+  override def getItem(position: Int): Object = sortedGroup(position)
   override def getItemId(position: Int): Long = position
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
 
-    val view = convertView match {
-      case reusedView: View => convertView
-      case _ => inflater.inflate(R.layout.lost_item_list_row, null)
-    }
-
-    val rowTitle = view.findView(TR.lostItemListTitle)
-    val rowDate = view.findView(TR.lostItemListDate)
-    val rowLocation = view.findView(TR.lostItemListLocation)
-    val lostItem = lostItems(position)
-    rowTitle.setText(lostItem.items)
-    rowDate.setText(lostItem.formatedDateTime)
-    rowLocation.setText(lostItem.location)
+    val view = inflater.inflate(R.layout.lost_item_group_row, null)
+    val rowTitle = view.findView(TR.groupTitle)
+    val rowCheckbox = view.findView(TR.groupCheckbox)
+    rowTitle.setText(sortedGroup(position).title)
+    rowCheckbox.setChecked(sortedGroup(position).isSelected)
+    view.setTag(ViewTag(rowTitle, rowCheckbox))
     view
   }
 }
@@ -62,11 +78,12 @@ class MainActivity extends Activity with TypedViewHolder with AsyncUI
       case Success(list) => runOnUiThread {
         val listView = findView(TR.lostItemList)
         val indicator = findView(TR.lostItemListLoadingIndicator)
-        listView.setAdapter(new MyAdapter(this, list))
+        listView.setAdapter(new MyAdapter(this, list.map(x => new Group(x.formatedDate, false)).toList.distinct))
         indicator.setVisibility(View.GONE)
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
-            Log.v(Tag, "Clicked...")
+            val adapter = listView.getAdapter.asInstanceOf[MyAdapter]
+            adapter.toggleState(position, view)
           }
         })
       }
