@@ -26,10 +26,7 @@ class MainActivity extends Activity with TypedViewHolder
   def groupingFunction(lostItem: LostItem): String = lostItem.formatedDate
 
   def initLoadingData(): Future[GroupAdapter] = {
-    val lostItemsFuture = LostItem.getDataFromNetwork recoverWith {
-      case LostItem.IncorrectFormatException => LostItem.getDataFromNetwork
-    }
-
+    val lostItemsFuture = LostItem.getLostItemData(this)
     lostItemsFuture.map { lostItems =>
       new GroupAdapter(this, lostItems, groupingFunction _)
     }
@@ -47,7 +44,6 @@ class MainActivity extends Activity with TypedViewHolder
 
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
-
     adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
   }
 
