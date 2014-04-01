@@ -15,37 +15,40 @@ import TypedResource._
 
 class SectionIndex(val sections: Vector[String], sortedItems: Vector[LostItem]) {
 
-  val positionForSection = (0 until sections.size).map { sectionIndex => 
-    sortedItems.indexWhere(_.formatedMonthDate == sections(sectionIndex))
-  }
+  val maxSectionIndex = sections.size - 1
+  val positionForSection = for {
+    sectionIndex <- (0 until sections.size)
+  } yield { sortedItems.indexWhere(_.formatedMonthDate == sections(sectionIndex)) }
 
-  val sectionForPosition = (0 until sortedItems.size).map { position =>
-    sections.indexWhere(_ == sortedItems(position).formatedMonthDate)
-  }
+  val sectionForPosition = for {
+    position <- (0 until sortedItems.size)
+  } yield { sections.indexWhere(_ == sortedItems(position).formatedMonthDate) }
 
 }
 
 class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable with SectionIndexer
 {
-  import android.util.Log
   private lazy val inflater = LayoutInflater.from(context)
   private lazy val defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
   private var sortedItems = defaultSortedItems
 
+  // SectionIndex API
   private var sectionIndex = updateSectionIndex
+
   private def updateSectionIndex() = new SectionIndex(
     sortedItems.map(_.formatedMonthDate).distinct,
     sortedItems
   )
 
+  override def getSections = sectionIndex.sections.toArray
+  override def getSectionForPosition(position: Int): Int = sectionIndex.sectionForPosition(position)
   override def getPositionForSection(sectionIndex: Int): Int = {
-    val clippedIndex = sectionIndex min (this.sectionIndex.sections.size - 1)
+    val clippedIndex = sectionIndex min this.sectionIndex.maxSectionIndex
     this.sectionIndex.positionForSection(clippedIndex)
   }
 
-  override def getSectionForPosition(position: Int): Int = sectionIndex.sectionForPosition(position)
-  override def getSections = sectionIndex.sections.toArray
-
+  // Filterable API
+  override def getFilter = filter
   private lazy val filter = new Filter() {
     import Filter.FilterResults
 
@@ -86,7 +89,7 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
     }
   }
 
-  override def getFilter = filter
+  // BaseAdapter API
   override def getCount: Int = sortedItems.size
   override def getItem(position: Int): Object = sortedItems(position)
   override def getItemId(position: Int): Long = position
