@@ -9,16 +9,46 @@ import android.widget.TextView
 import android.widget.CheckBox
 import android.widget.Filterable
 import android.widget.Filter
-
+import android.widget.SectionIndexer
 
 import TypedResource._
 
-class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable
+class SectionIndex(val sections: Vector[String], sortedItems: Vector[LostItem]) {
+
+  val maxSectionIndex = sections.size - 1
+  val positionForSection = for {
+    sectionIndex <- (0 until sections.size)
+  } yield { sortedItems.indexWhere(_.formatedMonthDate == sections(sectionIndex)) }
+
+  val sectionForPosition = for {
+    position <- (0 until sortedItems.size)
+  } yield { sections.indexWhere(_ == sortedItems(position).formatedMonthDate) }
+
+}
+
+class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable with SectionIndexer
 {
   private lazy val inflater = LayoutInflater.from(context)
   private lazy val defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
   private var sortedItems = defaultSortedItems
 
+  // SectionIndex API
+  private var sectionIndex = updateSectionIndex
+
+  private def updateSectionIndex() = new SectionIndex(
+    sortedItems.map(_.formatedMonthDate).distinct,
+    sortedItems
+  )
+
+  override def getSections = sectionIndex.sections.toArray
+  override def getSectionForPosition(position: Int): Int = sectionIndex.sectionForPosition(position)
+  override def getPositionForSection(sectionIndex: Int): Int = {
+    val clippedIndex = sectionIndex min this.sectionIndex.maxSectionIndex
+    this.sectionIndex.positionForSection(clippedIndex)
+  }
+
+  // Filterable API
+  override def getFilter = filter
   private lazy val filter = new Filter() {
     import Filter.FilterResults
 
@@ -53,12 +83,13 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
     override def publishResults(constraint: CharSequence, results: FilterResults) {
       if (results.values != sortedItems) {
         sortedItems = results.values.asInstanceOf[Vector[LostItem]]
+        sectionIndex = updateSectionIndex()
         notifyDataSetChanged()
       }
     }
   }
 
-  override def getFilter = filter
+  // BaseAdapter API
   override def getCount: Int = sortedItems.size
   override def getItem(position: Int): Object = sortedItems(position)
   override def getItemId(position: Int): Long = position
