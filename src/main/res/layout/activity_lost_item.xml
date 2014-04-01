@@ -5,27 +5,73 @@
     android:layout_height="match_parent"
     >
 
-  <LinearLayout
-      android:id="@+id/activityLostItemListLoadingIndicator"
+  <LinearLayout 
+    android:id="@+id/activityLostItemSearchBar"
+    android:orientation="vertical"
+    android:visibility="gone"
+    android:layout_marginTop="10px"
+    android:layout_marginBottom="10px"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <SearchView 
+      android:id="@+id/activityLostItemSearchMustHave"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center"
-      android:orientation="vertical">
+      android:layout_height="wrap_content"
+      android:queryHint="一定要出現的關鍵字，以空白分隔"
+      android:iconifiedByDefault="false"/>
 
-    <ProgressBar
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
+    <SearchView 
+      android:id="@+id/activityLostItemSearchOptional"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:queryHint="選擇性的關鍵字，以空白分隔"
+      android:iconifiedByDefault="false"/>
 
-    <TextView 
-      android:text="Loading..."
-      android:layout_marginTop="20px"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
   </LinearLayout>
 
-  <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activityLostItemListList"
+
+  <LinearLayout 
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" /> 
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/activityLostItemListLoadingIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+      <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+      <TextView 
+        android:text="Loading..."
+        android:layout_marginTop="20px"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ListView
+      android:id="@+id/activityLostItemListList"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" /> 
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@android:id/empty"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center">
+    
+      <TextView android:text="找不到東西耶"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+    </LinearLayout>
+
+  </LinearLayout>
 </LinearLayout>
 

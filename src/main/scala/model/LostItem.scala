@@ -13,6 +13,8 @@ import android.util.Log
 case class LostItem(id: String, department: String, dateTime: String, 
                     location: String, description: String) 
 {
+  private lazy val searchContent = s"$department $dateTime $location $description"
+
   def formatedDate = {
     val year = dateTime.substring(0,4)
     val month = dateTime.substring(4, 6)
@@ -29,6 +31,15 @@ case class LostItem(id: String, department: String, dateTime: String,
     val miniute = dateTime.substring(10, 12)
 
     s"$year-$month-$day $hour:$miniute"
+  }
+
+  def hasKeywords(mustHaveKeywords: List[String], filterKeywords: List[String]) = {
+    val hasMustHaveKeywords = mustHaveKeywords.forall(searchContent contains _)
+    val optionalKeywordsNotSet = filterKeywords == Nil
+    val hasOptionalKeywords = filterKeywords.exists(searchContent contains _)
+
+    hasMustHaveKeywords && (optionalKeywordsNotSet || hasOptionalKeywords)
+
   }
 
   def items = {
