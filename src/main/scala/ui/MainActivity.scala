@@ -75,7 +75,6 @@ class MainActivity extends Activity with TypedViewHolder
   def onActionShowDetailClicked(menuItem: MenuItem) {
     adapterHolder.runOnUIThread { adapter =>
       val selectedItems = adapter.getSelectedItems
-      android.widget.Toast.makeText(this, "size:" + selectedItems.size, android.widget.Toast.LENGTH_LONG).show()
       val intent = new Intent(this, classOf[LostItemListActivity])
       intent.putExtra("org.bone.findlost.lostItems", selectedItems)
       startActivity(intent)
