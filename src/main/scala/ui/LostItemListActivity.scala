@@ -17,6 +17,20 @@ class LostItemListActivity extends Activity with TypedViewHolder
 {
   private lazy val lostItems = getIntent.getSerializableExtra("org.bone.findlost.lostItems").asInstanceOf[Vector[LostItem]]
 
+  def onActionSearchClicked(menuItem: MenuItem) {
+    val searchBar = findView(TR.activityLostItemSearchBar)
+    searchBar.getVisibility match {
+      case View.VISIBLE => searchBar.setVisibility(View.GONE)
+      case View.GONE => searchBar.setVisibility(View.VISIBLE)
+    }
+  }
+
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    getMenuInflater.inflate(R.menu.activity_lost_item_list_actions, menu)
+    super.onCreateOptionsMenu(menu)
+  }
+
+
   override def onCreate(savedInstanceState: Bundle)  {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_lost_item)
