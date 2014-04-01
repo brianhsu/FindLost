@@ -9,15 +9,42 @@ import android.widget.TextView
 import android.widget.CheckBox
 import android.widget.Filterable
 import android.widget.Filter
-
+import android.widget.SectionIndexer
 
 import TypedResource._
 
-class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable
+class SectionIndex(val sections: Vector[String], sortedItems: Vector[LostItem]) {
+
+  val positionForSection = (0 until sections.size).map { sectionIndex => 
+    sortedItems.indexWhere(_.formatedMonthDate == sections(sectionIndex))
+  }
+
+  val sectionForPosition = (0 until sortedItems.size).map { position =>
+    sections.indexWhere(_ == sortedItems(position).formatedMonthDate)
+  }
+
+}
+
+class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable with SectionIndexer
 {
+  import android.util.Log
   private lazy val inflater = LayoutInflater.from(context)
   private lazy val defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
   private var sortedItems = defaultSortedItems
+
+  private var sectionIndex = updateSectionIndex
+  private def updateSectionIndex() = new SectionIndex(
+    sortedItems.map(_.formatedMonthDate).distinct,
+    sortedItems
+  )
+
+  override def getPositionForSection(sectionIndex: Int): Int = {
+    val clippedIndex = sectionIndex min (this.sectionIndex.sections.size - 1)
+    this.sectionIndex.positionForSection(clippedIndex)
+  }
+
+  override def getSectionForPosition(position: Int): Int = sectionIndex.sectionForPosition(position)
+  override def getSections = sectionIndex.sections.toArray
 
   private lazy val filter = new Filter() {
     import Filter.FilterResults
@@ -53,6 +80,7 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
     override def publishResults(constraint: CharSequence, results: FilterResults) {
       if (results.values != sortedItems) {
         sortedItems = results.values.asInstanceOf[Vector[LostItem]]
+        sectionIndex = updateSectionIndex()
         notifyDataSetChanged()
       }
     }

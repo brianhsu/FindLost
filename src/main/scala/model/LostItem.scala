@@ -22,6 +22,11 @@ case class LostItem(id: String, department: String, dateTime: String,
     s"$year-$month-$day"
   }
 
+  def formatedMonthDate = {
+    val month = dateTime.substring(4, 6)
+    val day = dateTime.substring(6, 8)
+    s"$month-$day"
+  }
 
   def formatedDateTime = {
     val year = dateTime.substring(0,4)
