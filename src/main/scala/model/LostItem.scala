@@ -66,7 +66,9 @@ case class LostItem(id: String, department: String, dateTime: String,
 
 object LostItem {
 
-  object IncorrectFormatException extends Exception("Incorrect format from data source URL")
+  val IncorrectFormatException = new Exception("Incorrect format from data source URL")
+  val UsingMobileConnectionException = new Exception("Using mobile data connection")
+  val NoNetworkException = new Exception("No active network")
 
   val LostItemCacheFileDir = "cachedFile"
   val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
@@ -81,28 +83,17 @@ object LostItem {
     }
   }
 
-  def getLostItemData(context: Context) = {
+  def getLostItemData(context: Context, allowMobile: Boolean, isRefresh: Boolean) = {
 
-    def fromNetwork = getDataFromNetwork(context) recoverWith {
-      case IncorrectFormatException => getDataFromNetwork(context)
+    def fromNetwork = getDataFromNetwork(context, allowMobile) recoverWith {
+      case IncorrectFormatException => getDataFromNetwork(context, allowMobile)
     }
 
-    getGroupsFromCacheDir(context) recoverWith { case e: FileNotFoundException => fromNetwork }
-  }
-
-  private def getGroupsFromCacheDir(context: Context): Future[List[Group]] = future {
-
-    val cacheDir = getCacheDir(context)
-
-    if (!cacheDir.exists) {
-      throw new FileNotFoundException
-    }
-
-    val cacheFileList = cacheDir.listFiles.toList
-
-    cacheFileList.isEmpty match {
-      case true  => throw new FileNotFoundException
-      case false => cacheFileList.map(filename => new Group(filename.getName, false))
+    isRefresh match {
+      case true => fromNetwork
+      case false => getGroupsFromCacheDir(context) recoverWith { 
+        case e: FileNotFoundException => fromNetwork
+      }
     }
   }
 
@@ -128,7 +119,32 @@ object LostItem {
     }
   }
 
-  private def getDataFromNetwork(context: Context): Future[List[Group]] = future {
+  private def getGroupsFromCacheDir(context: Context): Future[List[Group]] = future {
+
+    val cacheDir = getCacheDir(context)
+
+    if (!cacheDir.exists) {
+      throw new FileNotFoundException
+    }
+
+    val cacheFileList = cacheDir.listFiles.toList
+
+    cacheFileList.isEmpty match {
+      case true  => throw new FileNotFoundException
+      case false => cacheFileList.map(filename => new Group(filename.getName, false))
+    }
+  }
+
+  private def getDataFromNetwork(context: Context, 
+                                 allowMobile: Boolean): Future[List[Group]] = future {
+
+    if (NetworkState.getNetworkType(context).isEmpty) {
+      throw NoNetworkException
+    }
+
+    if (!allowMobile && NetworkState.isUsingMobileDataConnection(context)) {
+      throw UsingMobileConnectionException
+    }
 
     var items: List[LostItem] = Nil
     val url = new URL(DataSourceURL);
