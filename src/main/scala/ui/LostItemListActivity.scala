@@ -15,10 +15,17 @@ import AsyncUI._
 
 class LostItemListActivity extends Activity with TypedViewHolder
 {
-  private lazy val lostItems = getIntent.getSerializableExtra("org.bone.findlost.lostItems").asInstanceOf[Vector[LostItem]]
-  private lazy val adapter = new ItemAdapter(this, lostItems)
+  implicit val context = this
+
+  private lazy val selectedGroup = getIntent.getSerializableExtra("org.bone.findlost.selectedGroups").asInstanceOf[Vector[Group]]
+  private lazy val lostItems: Future[Vector[LostItem]] = getLostItems(selectedGroup)
+  private lazy val adapterHolder: Future[ItemAdapter] = lostItems.map(new ItemAdapter(this, _))
   private lazy val searchMustHave = findView(TR.activityLostItemSearchMustHave)
   private lazy val searchOptional = findView(TR.activityLostItemSearchOptional)
+
+  private def getLostItems(selectedGroup: Vector[Group]): Future[Vector[LostItem]] = {
+    LostItem.getLostItems(this, selectedGroup.map(_.title).toList)
+  }
 
   private def startSearching() {
     import android.util.Log
@@ -26,7 +33,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
     val optionalKeywords = searchOptional.getQuery.toString.trim
     val searchConstraint = s"${mustHaveKeywords}⌘${optionalKeywords}"
     Log.v("FindLost", s"query: $searchConstraint")
-    adapter.getFilter.filter(searchConstraint)
+    adapterHolder.runOnUIThread { adapter => adapter.getFilter.filter(searchConstraint) }
   }
 
   def setupSearchView(searchView: SearchView) {
@@ -56,9 +63,12 @@ class LostItemListActivity extends Activity with TypedViewHolder
 
     val indicator = findView(TR.activityLostItemListLoadingIndicator)
     val listView = findView(TR.activityLostItemListList)
-    listView.setAdapter(adapter)
-    listView.setFastScrollEnabled(true)
-    indicator.setVisibility(View.GONE)
+
+    adapterHolder.runOnUIThread { adapter =>
+      listView.setAdapter(adapter)
+      listView.setFastScrollEnabled(true)
+      indicator.setVisibility(View.GONE)
+    }
 
     setupSearchView(searchMustHave)
     setupSearchView(searchOptional)

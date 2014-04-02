@@ -26,12 +26,9 @@ class MainActivity extends Activity with TypedViewHolder
   def groupingFunction(lostItem: LostItem): String = lostItem.formatedDate
 
   def initLoadingData(): Future[GroupAdapter] = {
-    val lostItemsFuture = LostItem.getDataFromNetwork recoverWith {
-      case LostItem.IncorrectFormatException => LostItem.getDataFromNetwork
-    }
-
-    lostItemsFuture.map { lostItems =>
-      new GroupAdapter(this, lostItems, groupingFunction _)
+    val lostItemsFuture = LostItem.getLostItemData(this)
+    lostItemsFuture.map { groups =>
+      new GroupAdapter(this, groups)
     }
   }
 
@@ -47,7 +44,6 @@ class MainActivity extends Activity with TypedViewHolder
 
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
-
     adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
   }
 
@@ -74,9 +70,9 @@ class MainActivity extends Activity with TypedViewHolder
 
   def onActionShowDetailClicked(menuItem: MenuItem) {
     adapterHolder.runOnUIThread { adapter =>
-      val selectedItems = adapter.getSelectedItems
+      val selectedGroups = adapter.getSelectedGroups
       val intent = new Intent(this, classOf[LostItemListActivity])
-      intent.putExtra("org.bone.findlost.lostItems", selectedItems)
+      intent.putExtra("org.bone.findlost.selectedGroups", selectedGroups)
       startActivity(intent)
     }
   }
