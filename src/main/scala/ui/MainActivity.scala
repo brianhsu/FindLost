@@ -21,6 +21,7 @@ class MainActivity extends Activity with TypedViewHolder
 
   private var actionShowDetailHolder: Option[MenuItem] = None
   private lazy val indicator = findView(TR.lostItemListLoadingIndicator)
+  private lazy val errorMessageSpace = findView(TR.errorMessageSpace)
   private lazy val adapterHolder: Future[GroupAdapter] = initLoadingData()
 
   def groupingFunction(lostItem: LostItem): String = lostItem.formatedDate
@@ -40,11 +41,22 @@ class MainActivity extends Activity with TypedViewHolder
     super.onCreateOptionsMenu(menu)
   }
 
+  def showErrorMessage()
+  {
+    this.indicator.setVisibility(View.GONE)
+    this.errorMessageSpace.setVisibility(View.VISIBLE)
+  }
+
   override def onCreate(savedInstanceState: Bundle)  {
 
+    import scala.util._
+    import android.util.Log
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
     adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
+    adapterHolder.onFailure { 
+      case e: Exception => this.runOnUIThread { showErrorMessage() }
+    }
   }
 
   def showDateGroupListView(adapter: GroupAdapter) {

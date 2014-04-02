@@ -90,22 +90,6 @@ object LostItem {
     getGroupsFromCacheDir(context) recoverWith { case e: FileNotFoundException => fromNetwork }
   }
 
-  private def getGroupsFromCacheDir(context: Context): Future[List[Group]] = future {
-
-    val cacheDir = getCacheDir(context)
-
-    if (!cacheDir.exists) {
-      throw new FileNotFoundException
-    }
-
-    val cacheFileList = cacheDir.listFiles.toList
-
-    cacheFileList.isEmpty match {
-      case true  => throw new FileNotFoundException
-      case false => cacheFileList.map(filename => new Group(filename.getName, false))
-    }
-  }
-
   def getLostItems(context: Context, dateList: List[String]): Future[Vector[LostItem]] = {
 
     def getItemsFromFile(date: String): List[LostItem] = {
@@ -125,6 +109,22 @@ object LostItem {
       } { items ::= item }
 
       items.sortWith(_.formatedDate > _.formatedDate).toVector
+    }
+  }
+
+  private def getGroupsFromCacheDir(context: Context): Future[List[Group]] = future {
+
+    val cacheDir = getCacheDir(context)
+
+    if (!cacheDir.exists) {
+      throw new FileNotFoundException
+    }
+
+    val cacheFileList = cacheDir.listFiles.toList
+
+    cacheFileList.isEmpty match {
+      case true  => throw new FileNotFoundException
+      case false => cacheFileList.map(filename => new Group(filename.getName, false))
     }
   }
 
