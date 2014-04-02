@@ -83,13 +83,18 @@ object LostItem {
     }
   }
 
-  def getLostItemData(context: Context, allowMobile: Boolean = false) = {
+  def getLostItemData(context: Context, allowMobile: Boolean, isRefresh: Boolean) = {
 
     def fromNetwork = getDataFromNetwork(context, allowMobile) recoverWith {
       case IncorrectFormatException => getDataFromNetwork(context, allowMobile)
     }
 
-    getGroupsFromCacheDir(context) recoverWith { case e: FileNotFoundException => fromNetwork }
+    isRefresh match {
+      case true => fromNetwork
+      case false => getGroupsFromCacheDir(context) recoverWith { 
+        case e: FileNotFoundException => fromNetwork
+      }
+    }
   }
 
   def getLostItems(context: Context, dateList: List[String]): Future[Vector[LostItem]] = {

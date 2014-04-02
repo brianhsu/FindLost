@@ -1,7 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+  <item android:id="@+id/mainActivityActionRefresh"
+    android:showAsAction="always"
+    android:onClick="onActionRefreshClicked"
+    android:icon="@drawable/ic_action_refresh"
+    android:title="重新下載失物資料"/>
+
   <item android:id="@+id/mainActivityActionShowDetail"
     android:showAsAction="always"
     android:onClick="onActionShowDetailClicked"
     android:icon="@drawable/ic_action_view_as_list"
     android:title="顯示列表"/>
+
 </menu>

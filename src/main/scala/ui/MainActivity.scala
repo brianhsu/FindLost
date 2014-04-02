@@ -32,17 +32,19 @@ class MainActivity extends Activity with TypedViewHolder
 
   private var adapterHolder: Future[GroupAdapter] = _
   private var allowMobileData: Boolean = false
+  private var isLoading: Boolean = false
 
-  private def loadingData(): Future[GroupAdapter] = {
-    val lostItemsFuture = LostItem.getLostItemData(this, allowMobileData)
+  private def loadingData(isRefresh: Boolean): Future[GroupAdapter] = {
+    val lostItemsFuture = LostItem.getLostItemData(this, allowMobileData, isRefresh)
     lostItemsFuture.map { groups =>
       new GroupAdapter(this, groups)
     }
   }
 
-  private def setupGroupList() {
+  private def setupGroupList(isRefresh: Boolean = false) {
+    this.isLoading = true
     indicator.setVisibility(View.VISIBLE)
-    adapterHolder = loadingData()
+    adapterHolder = loadingData(isRefresh)
     adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
     adapterHolder.onFailure { 
       case UsingMobileConnectionException => this.runOnUIThread { showMobileNetworkWarning() }
@@ -98,6 +100,7 @@ class MainActivity extends Activity with TypedViewHolder
         setActionShowDetailEnabled(adapter.hasItemSelected)
       }
     })
+    this.isLoading = false
   }
 
   private def setLoadingIndicatorState(isLoading: Boolean) {
@@ -136,6 +139,12 @@ class MainActivity extends Activity with TypedViewHolder
       val intent = new Intent(this, classOf[LostItemListActivity])
       intent.putExtra("org.bone.findlost.selectedGroups", selectedGroups)
       startActivity(intent)
+    }
+  }
+
+  def onActionRefreshClicked(menuItem: MenuItem) {
+    if (!isLoading) {
+      setupGroupList(true)
     }
   }
 
