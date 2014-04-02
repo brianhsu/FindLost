@@ -67,6 +67,8 @@ case class LostItem(id: String, department: String, dateTime: String,
 object LostItem {
 
   object IncorrectFormatException extends Exception("Incorrect format from data source URL")
+  object UsingMobileConnectionException extends Exception("Using mobile data connection")
+  object NoNetworkException extends Exception("No active network")
 
   val LostItemCacheFileDir = "cachedFile"
   val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
@@ -81,10 +83,10 @@ object LostItem {
     }
   }
 
-  def getLostItemData(context: Context) = {
+  def getLostItemData(context: Context, allowMobile: Boolean = false) = {
 
-    def fromNetwork = getDataFromNetwork(context) recoverWith {
-      case IncorrectFormatException => getDataFromNetwork(context)
+    def fromNetwork = getDataFromNetwork(context, allowMobile) recoverWith {
+      case IncorrectFormatException => getDataFromNetwork(context, allowMobile)
     }
 
     getGroupsFromCacheDir(context) recoverWith { case e: FileNotFoundException => fromNetwork }
@@ -128,7 +130,16 @@ object LostItem {
     }
   }
 
-  private def getDataFromNetwork(context: Context): Future[List[Group]] = future {
+  private def getDataFromNetwork(context: Context, 
+                                 allowMobile: Boolean): Future[List[Group]] = future {
+
+    if (NetworkState.getNetworkType(context).isEmpty) {
+      throw NoNetworkException
+    }
+
+    if (!allowMobile && NetworkState.isUsingMobileDataConnection(context)) {
+      throw UsingMobileConnectionException
+    }
 
     var items: List[LostItem] = Nil
     val url = new URL(DataSourceURL);
