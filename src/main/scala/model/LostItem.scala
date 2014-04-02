@@ -1,5 +1,7 @@
 package org.bone.findlost
 
+import org.bone.findlost.AsyncUI._
+
 import android.content.Context
 import android.util.Log
 import android.os.Environment
@@ -7,7 +9,6 @@ import android.util.Log
 
 import scala.io.Source
 import scala.concurrent._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.net.HttpURLConnection
 import java.net.URL
@@ -52,7 +53,7 @@ case class LostItem(id: String, department: String, dateTime: String,
 
   }
 
-  def toLine = s"$id,$dateTime,$location,$description"
+  def toLine = raw"""$id,$department,="${dateTime}",$location,$description"""
 
   def items = {
     description.replace("拾得人拾獲：", "").
@@ -67,7 +68,7 @@ object LostItem {
 
   object IncorrectFormatException extends Exception("Incorrect format from data source URL")
 
-  val LostItemCacheFileName = "cachedList.txt"
+  val LostItemCacheFileDir = "cachedFile"
   val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
 
   def apply(line: String): Option[LostItem] = {
@@ -86,26 +87,48 @@ object LostItem {
       case IncorrectFormatException => getDataFromNetwork(context)
     }
 
-    getDataFromCacheFile(context) recoverWith { case e: FileNotFoundException => fromNetwork }
+    getGroupsFromCacheDir(context) recoverWith { case e: FileNotFoundException => fromNetwork }
   }
 
-  private def getDataFromCacheFile(context: Context): Future[List[LostItem]] = future {
-    Log.v("FindLost", "getDataFromCacheFile")
-    val cacheFile = getCacheFile(context)
+  private def getGroupsFromCacheDir(context: Context): Future[List[Group]] = future {
 
-    if (!cacheFile.exists) {
+    val cacheDir = getCacheDir(context)
+
+    if (!cacheDir.exists) {
       throw new FileNotFoundException
     }
 
-    val source = Source.fromFile(cacheFile)
-    val lostItemsLines = source.getLines.toList
-    val lostItems = lostItemsLines.flatMap(line => LostItem(line))
-    lostItems.sortWith(_.dateTime > _.dateTime)
+    val cacheFileList = cacheDir.listFiles.toList
+
+    cacheFileList.isEmpty match {
+      case true  => throw new FileNotFoundException
+      case false => cacheFileList.map(filename => new Group(filename.getName, false))
+    }
   }
 
-  private def getDataFromNetwork(context: Context): Future[List[LostItem]] = future {
+  def getLostItems(context: Context, dateList: List[String]): Future[Vector[LostItem]] = {
 
-    Log.v("FindLost", "getDataFromCacheNetwork")
+    def getItemsFromFile(date: String): List[LostItem] = {
+
+      val cacheFile = new File(getCacheDir(context), date)
+      val source = Source.fromFile(cacheFile)
+      val lostItemsLines = source.getLines.toList
+      lostItemsLines.flatMap (line => LostItem(line))
+    }
+
+    future {
+      var items: List[LostItem] = Nil
+
+      for {
+        date <- dateList
+        item <- getItemsFromFile(date)
+      } { items ::= item }
+
+      items.sortWith(_.formatedDate > _.formatedDate).toVector
+    }
+  }
+
+  private def getDataFromNetwork(context: Context): Future[List[Group]] = future {
 
     var items: List[LostItem] = Nil
     val url = new URL(DataSourceURL);
@@ -123,28 +146,36 @@ object LostItem {
       val source = Source.fromInputStream(connection.getInputStream)("UTF-8")
       val lostItemsLines = source.getLines.toList
       val lostItems = lostItemsLines.flatMap(line => LostItem(line))
-      writeFileToCache(context, lostItemsLines)
-      lostItems.sortWith(_.dateTime > _.dateTime)
+      val sortedItems = lostItems.sortWith(_.dateTime > _.dateTime)
+      val groupedItems = sortedItems.groupBy(_.formatedDate)
+
+      groupedItems.foreach { case(date, items) =>
+        writeFileToCache(context, date, items)
+      }
+
+      groupedItems.keys.map(title => new Group(title, false)).toList
     }
 
   }
 
-  private def writeFileToCache(context: Context, itemList: List[String]) {
-    val cacheFile = getCacheFile(context)
+  private def writeFileToCache(context: Context, formatedDate: String, 
+                               itemList: List[LostItem]) {
+
+    val cacheFile = new File(getCacheDir(context), formatedDate)
     val writer = new PrintWriter(cacheFile)
-    itemList.foreach { writer.println _ }
+    itemList.foreach { item => writer.println(item.toLine) }
     writer.close()
   }
 
-  private def getCacheFile(context: Context): File = {
+  private def getCacheDir(context: Context): File = {
 
     val isSDCardMounted = Environment.getExternalStorageState == Environment.MEDIA_MOUNTED
     val cacheFile = isSDCardMounted match {
-      case true => new File(context.getExternalCacheDir(), LostItemCacheFileName)
-      case false => new File(context.getCacheDir(), LostItemCacheFileName)
+      case true => new File(context.getExternalCacheDir(), LostItemCacheFileDir)
+      case false => new File(context.getCacheDir(), LostItemCacheFileDir)
     }
 
-    !cacheFile.getParentFile.mkdirs()
+    cacheFile.mkdirs()
     cacheFile
   }
 }

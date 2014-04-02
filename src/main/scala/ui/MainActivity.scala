@@ -27,8 +27,8 @@ class MainActivity extends Activity with TypedViewHolder
 
   def initLoadingData(): Future[GroupAdapter] = {
     val lostItemsFuture = LostItem.getLostItemData(this)
-    lostItemsFuture.map { lostItems =>
-      new GroupAdapter(this, lostItems, groupingFunction _)
+    lostItemsFuture.map { groups =>
+      new GroupAdapter(this, groups)
     }
   }
 
@@ -70,9 +70,9 @@ class MainActivity extends Activity with TypedViewHolder
 
   def onActionShowDetailClicked(menuItem: MenuItem) {
     adapterHolder.runOnUIThread { adapter =>
-      val selectedItems = adapter.getSelectedItems
+      val selectedGroups = adapter.getSelectedGroups
       val intent = new Intent(this, classOf[LostItemListActivity])
-      intent.putExtra("org.bone.findlost.lostItems", selectedItems)
+      intent.putExtra("org.bone.findlost.selectedGroups", selectedGroups)
       startActivity(intent)
     }
   }
