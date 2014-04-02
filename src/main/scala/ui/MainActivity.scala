@@ -1,6 +1,8 @@
 package org.bone.findlost
 
 import android.app.Activity
+import android.app.AlertDialog
+
 import android.os.Bundle
 import android.content.Context
 import android.content.Intent
@@ -12,11 +14,14 @@ import android.widget.Toast
 
 import scala.concurrent._
 import scala.concurrent.duration._
+import android.content.DialogInterface
 
 import AsyncUI._
+import android.util.Log
 
 class MainActivity extends Activity with TypedViewHolder
 {
+  import LostItem._
 
   private implicit val runOnUIActivity = this
 
@@ -26,9 +31,10 @@ class MainActivity extends Activity with TypedViewHolder
   private lazy val errorMessageSpace = findView(TR.errorMessageSpace)
 
   private var adapterHolder: Future[GroupAdapter] = _
+  private var allowMobileData: Boolean = false
 
   private def loadingData(): Future[GroupAdapter] = {
-    val lostItemsFuture = LostItem.getLostItemData(this)
+    val lostItemsFuture = LostItem.getLostItemData(this, allowMobileData)
     lostItemsFuture.map { groups =>
       new GroupAdapter(this, groups)
     }
@@ -39,11 +45,32 @@ class MainActivity extends Activity with TypedViewHolder
     adapterHolder = loadingData()
     adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
     adapterHolder.onFailure { 
+      case UsingMobileConnectionException => this.runOnUIThread { showMobileNetworkWarning() }
       case e: Exception => this.runOnUIThread { displayErrorMessage(e) }
     }
   }
 
-  private def displayErrorMessage(exception: Exception)
+  private def showMobileNetworkWarning() {
+    val alertDialog = new AlertDialog.Builder(this)
+    alertDialog.setTitle("行動網路警告")
+    alertDialog.setMessage("失物資料庫的檔案較大（約 >= 4MB），而您正使用動網路做為網際網路的連線方式，若您使用的不是吃到飽方案，可能會超流或造成較高的帳單金額，確定要繼續嗎？")
+    alertDialog.setCancelable(false)
+    alertDialog.setPositiveButton("繼續使用", new DialogInterface.OnClickListener() {
+      override def onClick(dialog: DialogInterface, which: Int) {
+        MainActivity.this.allowMobileData = true
+        MainActivity.this.setupGroupList()
+      }
+    })
+    alertDialog.setNegativeButton("關閉此程式", new DialogInterface.OnClickListener() {
+      override def onClick(dialog: DialogInterface, which: Int) {
+        MainActivity.this.finish()
+      }
+    })
+
+    alertDialog.show()
+  }
+
+  private def displayErrorMessage(exception: Exception) 
   {
     val message = findView(TR.errorMessageContent)
     setLoadingIndicatorState(false)
@@ -53,8 +80,7 @@ class MainActivity extends Activity with TypedViewHolder
     Toast.makeText(this, "失敗原因：" + exception.getMessage, Toast.LENGTH_LONG).show()
   }
 
-  private def disableErrorMessage()
-  {
+  private def disableErrorMessage() {
     errorMessageSpace.setVisibility(View.GONE)
     errorMessageRetryButton.setEnabled(false)
   }

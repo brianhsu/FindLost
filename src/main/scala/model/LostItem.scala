@@ -66,9 +66,9 @@ case class LostItem(id: String, department: String, dateTime: String,
 
 object LostItem {
 
-  object IncorrectFormatException extends Exception("Incorrect format from data source URL")
-  object UsingMobileConnectionException extends Exception("Using mobile data connection")
-  object NoNetworkException extends Exception("No active network")
+  val IncorrectFormatException = new Exception("Incorrect format from data source URL")
+  val UsingMobileConnectionException = new Exception("Using mobile data connection")
+  val NoNetworkException = new Exception("No active network")
 
   val LostItemCacheFileDir = "cachedFile"
   val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
