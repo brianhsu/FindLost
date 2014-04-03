@@ -1,13 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout 
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-  <TextView 
-    android:text="LostItemActivity"
-    android:layout_marginTop="20px"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
-</LinearLayout>
+    android:layout_height="match_parent">
+    <TextView 
+      android:text="發票號碼"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemInvoiceID"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="OP10304A239503XCA"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="受理單位"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemDepartment"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="航空警察局保安警察大隊第一隊第二分隊"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="拾得日期時間"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemDateTime"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="2014-04-01 10:11"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="拾得地點"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemLocation"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="臺灣桃園國際機場第一航廈入境CI-524班機"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="公告內容"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemDescription"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="拾得人拾獲：平板電腦1.00台，請失主於公告期間六個月內攜帶本人印章及身分證件前來認領。，請失主於公告期間內攜帶本人印章及身分證件前來認領。"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+  </LinearLayout>
+</ScrollView>
 
