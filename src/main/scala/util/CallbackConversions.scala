@@ -26,17 +26,17 @@ object CallbackConversions
 
   implicit class RichSearchView(searchView: SearchView) {
     def setOnQueryListener(changeReturn: Boolean, submitReturn: Boolean)(callback: String => Any) = {
-      new SearchView.OnQueryTextListener() {
+      searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         override def onQueryTextChange(newText: String) = { 
-            callback(newText)
-            changeReturn 
+          callback(newText)
+          changeReturn 
         }
 
         override def onQueryTextSubmit(text: String) = { 
-            callback(text)
-            submitReturn
+          callback(text)
+          submitReturn
         }
-      }
+      })
     }
   }
 }
