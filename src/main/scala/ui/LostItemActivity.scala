@@ -23,19 +23,19 @@ class LostItemActivity extends Activity with TypedViewHolder
   private lazy val dateTime = findView(TR.activityLostItemDateTime)
   private lazy val location = findView(TR.activityLostItemLocation)
   private lazy val description = findView(TR.activityLostItemDescription)
-  private var actionStar: MenuItem = _
-  private var isStar: Boolean = false
+  private lazy val starList = new StarList(this)
 
-  def toggleStar() {
-    isStar = !isStar
-    isStar match {
-      case true => actionStar.setIcon(R.drawable.ic_action_important_color)
-      case false => actionStar.setIcon(R.drawable.ic_action_important)
-    }
-  }
+  private var actionStar: MenuItem = _
 
   def onActionStarClicked(menuItem: MenuItem) {
-    toggleStar()
+    starList.isInStarList(lostItem) match {
+      case false => 
+        starList.insertToStarList(lostItem) 
+        actionStar.setIcon(R.drawable.ic_action_important_color)
+      case true => 
+        starList.removeFromStarList(lostItem); 
+        actionStar.setIcon(R.drawable.ic_action_important)
+    }
   }
 
   def searchDepartment(view: View) {
@@ -52,9 +52,11 @@ class LostItemActivity extends Activity with TypedViewHolder
     val inflater = getMenuInflater
     inflater.inflate(R.menu.activity_lost_item_actions, menu)
     actionStar = menu.findItem(R.id.activityLostItemActionStar).asInstanceOf[MenuItem]
-    if (isStar) {
+
+    if (starList.isInStarList(lostItem)) {
       actionStar.setIcon(R.drawable.ic_action_important_color)
     }
+
     super.onCreateOptionsMenu(menu)
   }
 
@@ -67,4 +69,10 @@ class LostItemActivity extends Activity with TypedViewHolder
     location.setText(lostItem.location)
     description.setText(lostItem.description)
   }
+
+  override def onDestroy() {
+    starList.close()
+    super.onDestroy()
+  }
+
 }
