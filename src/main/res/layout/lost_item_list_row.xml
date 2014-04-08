@@ -7,6 +7,7 @@
   <TextView android:id="@+id/lostItemListTitle" 
     android:layout_margin="15px"
     android:textSize="20dp"
+    android:lineSpacingMultiplier="1.3"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
 
