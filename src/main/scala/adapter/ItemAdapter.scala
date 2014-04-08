@@ -96,7 +96,7 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
     val view = convertView match {
       case view: View => convertView
-      case _ => inflater.inflate(R.layout.lost_item_list_row, null)
+      case _ => inflater.inflate(R.layout.row_lost_item_list, null)
     }
 
     val item = sortedItems(position)

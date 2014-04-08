@@ -7,8 +7,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView 
-      android:text="發票號碼"
+      android:text="@string/invoiceIDTitle"
       android:background="#3d3d3d"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:padding="10dp"
@@ -18,7 +19,6 @@
     <TextView 
       android:id="@+id/activityLostItemInvoiceID"
       android:textAppearance="?android:attr/textAppearanceMedium"
-      android:text="OP10304A239503XCA"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
       android:layout_margin="15dp"
@@ -26,12 +26,13 @@
       android:layout_height="wrap_content" />
 
     <TextView 
-      android:text="受理單位"
+      android:text="@string/departmentTitle"
       android:background="#3d3d3d"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:padding="10dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content" />
+
     <RelativeLayout
       android:paddingTop="25dp"
       android:paddingBottom="20dp"
@@ -45,7 +46,6 @@
         android:paddingTop="5dp"
         android:id="@+id/activityLostItemDepartment"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="航空警察局保安警察大隊第一隊第二分隊"
         android:lineSpacingMultiplier="1.3"
         android:layout_marginRight="30dp"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
     </RelativeLayout>
 
     <TextView 
-      android:text="拾得日期時間"
+      android:text="@string/dateTimeTitle"
       android:background="#3d3d3d"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:padding="10dp"
@@ -69,7 +69,6 @@
     <TextView 
       android:id="@+id/activityLostItemDateTime"
       android:textAppearance="?android:attr/textAppearanceMedium"
-      android:text="2014-04-01 10:11"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
       android:layout_margin="15dp"
@@ -77,7 +76,7 @@
       android:layout_height="wrap_content" />
 
     <TextView 
-      android:text="拾得地點"
+      android:text="@string/locationTitle"
       android:background="#3d3d3d"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:padding="10dp"
@@ -87,7 +86,6 @@
     <TextView 
       android:id="@+id/activityLostItemLocation"
       android:textAppearance="?android:attr/textAppearanceMedium"
-      android:text="臺灣桃園國際機場第一航廈入境CI-524班機"
       android:lineSpacingMultiplier="1.3"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
@@ -96,7 +94,7 @@
       android:layout_height="wrap_content" />
 
     <TextView 
-      android:text="公告內容"
+      android:text="@string/descriptionTitle"
       android:background="#3d3d3d"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:padding="10dp"
@@ -106,7 +104,6 @@
     <TextView 
       android:id="@+id/activityLostItemDescription"
       android:textAppearance="?android:attr/textAppearanceMedium"
-      android:text="拾得人拾獲：平板電腦1.00台，請失主於公告期間六個月內攜帶本人印章及身分證件前來認領。，請失主於公告期間內攜帶本人印章及身分證件前來認領。"
       android:lineSpacingMultiplier="1.3"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"

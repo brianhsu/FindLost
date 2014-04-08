@@ -56,20 +56,24 @@ class MainActivity extends Activity with TypedViewHolder
 
   private def showMobileNetworkWarning() {
     val alertDialog = new AlertDialog.Builder(this)
-    alertDialog.setTitle("行動網路警告")
-    alertDialog.setMessage("失物資料庫的檔案較大（約 >= 4MB），而您正使用動網路做為網際網路的連線方式，若您使用的不是吃到飽方案，可能會超流或造成較高的帳單金額，確定要繼續嗎？")
+    alertDialog.setTitle(R.string.mobileWarningTitle)
+    alertDialog.setMessage(R.string.mobileWarningContent)
     alertDialog.setCancelable(false)
-    alertDialog.setPositiveButton("繼續使用", new DialogInterface.OnClickListener() {
-      override def onClick(dialog: DialogInterface, which: Int) {
+    alertDialog.setPositiveButton(R.string.mobileWarningConfirm, 
+      new DialogInterface.OnClickListener() {
+        override def onClick(dialog: DialogInterface, which: Int) {
         MainActivity.this.allowMobileData = true
         MainActivity.this.setupGroupList()
+        }
       }
-    })
-    alertDialog.setNegativeButton("關閉此程式", new DialogInterface.OnClickListener() {
-      override def onClick(dialog: DialogInterface, which: Int) {
-        MainActivity.this.finish()
+    )
+    alertDialog.setNegativeButton(R.string.mobileWarningCancel, 
+      new DialogInterface.OnClickListener() {
+        override def onClick(dialog: DialogInterface, which: Int) {
+          MainActivity.this.finish()
+        }
       }
-    })
+    )
 
     alertDialog.show()
   }
@@ -80,8 +84,8 @@ class MainActivity extends Activity with TypedViewHolder
     setLoadingIndicatorState(false)
     errorMessageSpace.setVisibility(View.VISIBLE)
     errorMessageRetryButton.setEnabled(true)
-    message.setText("無法從網路取得資料\n請確認網路連線是否已開啟")
-    Toast.makeText(this, "失敗原因：" + exception.getMessage, Toast.LENGTH_LONG).show()
+    message.setText(R.string.downloadErrorMessage)
+    Toast.makeText(this, getString(R.string.errorCause) + exception.getMessage, Toast.LENGTH_LONG).show()
   }
 
   private def disableErrorMessage() {

@@ -21,7 +21,7 @@
 
     <TextView 
       android:id="@+id/errorMessageContent"
-      android:text="對不起，發生錯誤了"
+      android:text="@string/errorMessageNotice"
       android:textAppearance="?android:attr/textAppearanceMedium"
       android:lineSpacingMultiplier="1.5"
       android:gravity="center"
@@ -32,7 +32,7 @@
     <Button
       android:id="@+id/errorMessageRetryButton"
       android:enabled="false"
-      android:text="重試一次"
+      android:text="@string/retry"
       android:textSize="14sp"
       android:padding="10dp"
       android:onClick="onRetryClicked"

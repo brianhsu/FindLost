@@ -4,6 +4,6 @@
     android:showAsAction="always"
     android:onClick="onActionStarClicked"
     android:icon="@drawable/ic_action_important"
-    android:title="搜尋"/>
+    android:title="@string/star"/>
 
 </menu>

@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FindLost</string>
+  <string name="app_name">FindLost</string>
+
+  <string name="queryHintMustHave">一定要出現的關鍵字，以空白分隔</string>
+  <string name="queryHintOptional">一定要出現的關鍵字，以空白分隔</string>
+  <string name="emptyListNotice">找不到東西耶</string>
+
+  <string name="invoiceIDTitle">發票號碼</string>
+  <string name="departmentTitle">受理單位</string>
+  <string name="dateTimeTitle">拾得日期時間</string>
+  <string name="locationTitle">拾得地點</string>
+  <string name="descriptionTitle">公告內容</string>
+
+  <string name="errorMessageNotice">對不起，發生錯誤了</string>
+  <string name="downloadErrorMessage">無法從網路取得資料\n請確認網路連線是否已開啟</string>
+  <string name="errorCause">失敗原因：</string>
+  <string name="retry">重試一次</string>
+
+  <string name="loading">讀取中，請稍候……</string>
+
+  <string name="search">搜尋</string>
+  <string name="star">標記成「可能是我的」</string>
+
+  <string name="refresh">重新下載失物資料</string>
+  <string name="showList">顯示列表</string>
+
+  <string name="mobileWarningTitle">行動網路警告</string>
+  <string name="mobileWarningContent">失物資料庫的檔案較大（約 >= 4MB），而您正使用動網路做為網際網路的連>線方式，若您使用的不是吃到飽方案，可能會超流或造成較高的帳單金額，確定要繼續嗎？</string>
+  <string name="mobileWarningConfirm">繼續使用</string>
+  <string name="mobileWarningCancel">關閉此程式</string>
+
+
 </resources>
