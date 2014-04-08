@@ -7,6 +7,8 @@ import android.view.View
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
+import android.widget.AdapterView
+import android.content.Intent
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -16,11 +18,14 @@ import AsyncUI._
 object LostItemListActivity {
   val BundleMustHaveKeywords = "org.bone.findlost.mustHaveKeywords"
   val BundleOptionalKeywords = "org.bone.findlost.optionalKeywords"
+
+  val ExtrasLostItem= "org.bone.findlost.lostItem"
 }
 
 class LostItemListActivity extends Activity with TypedViewHolder
 {
   import LostItemListActivity._
+  import CallbackConversions._
 
   implicit val context = this
 
@@ -43,10 +48,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
   }
 
   def setupSearchView(searchView: SearchView) {
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-      override def onQueryTextChange(newText: String) = { startSearching(); false }
-      override def onQueryTextSubmit(text: String) = { startSearching(); true }
-    })
+    searchView.setOnQueryListener(false, true) { query => startSearching() }
   }
 
   def onActionSearchClicked(menuItem: MenuItem) {
@@ -73,15 +75,20 @@ class LostItemListActivity extends Activity with TypedViewHolder
 
   override def onCreate(savedInstanceState: Bundle)  {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_lost_item)
+    setContentView(R.layout.activity_lost_item_list)
 
-    val indicator = findView(TR.activityLostItemListLoadingIndicator)
+    val indicator = findView(TR.moduleLoadingIndicator)
     val listView = findView(TR.activityLostItemListList)
 
     adapterHolder.runOnUIThread { adapter =>
       listView.setAdapter(adapter)
       listView.setFastScrollEnabled(true)
-      indicator.setVisibility(View.GONE)
+      listView.setOnItemClickListener { position: Int =>
+        val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
+        val intent = new Intent(LostItemListActivity.this, classOf[LostItemActivity])
+        intent.putExtra(LostItemListActivity.ExtrasLostItem, lostItem)
+        startActivity(intent)
+      }
 
       if (savedInstanceState != null) {
         val mustHaveKeywords = savedInstanceState.getString(BundleMustHaveKeywords)
@@ -98,6 +105,8 @@ class LostItemListActivity extends Activity with TypedViewHolder
         }
 
       }
+
+      indicator.setVisibility(View.GONE)
     }
 
     setupSearchView(searchMustHave)

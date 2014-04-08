@@ -22,13 +22,15 @@ import android.util.Log
 class MainActivity extends Activity with TypedViewHolder
 {
   import LostItem._
+  import CallbackConversions._
 
   private implicit val runOnUIActivity = this
 
   private var actionShowDetailHolder: Option[MenuItem] = None
-  private lazy val indicator = findView(TR.lostItemListLoadingIndicator)
+  private lazy val indicator = findView(TR.moduleLoadingIndicator)
   private lazy val errorMessageRetryButton = findView(TR.errorMessageRetryButton)
   private lazy val errorMessageSpace = findView(TR.errorMessageSpace)
+  private lazy val listView = findView(TR.activityMainGroupList)
 
   private var adapterHolder: Future[GroupAdapter] = _
   private var allowMobileData: Boolean = false
@@ -91,15 +93,11 @@ class MainActivity extends Activity with TypedViewHolder
     setLoadingIndicatorState(false)
     disableErrorMessage()
 
-    val listView = findView(TR.lostItemList)
-
     listView.setAdapter(adapter)
-    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
-        adapter.toggleState(position, view)
-        setActionShowDetailEnabled(adapter.hasItemSelected)
-      }
-    })
+    listView.setOnItemClickListener { (position: Int, view: View) =>
+      adapter.toggleState(position, view)
+      setActionShowDetailEnabled(adapter.hasItemSelected)
+    }
     this.isLoading = false
   }
 
@@ -124,7 +122,7 @@ class MainActivity extends Activity with TypedViewHolder
 
   override def onCreate(savedInstanceState: Bundle)  {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.main)
+    setContentView(R.layout.activity_main)
     setupGroupList()
   }
 

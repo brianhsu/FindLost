@@ -18,8 +18,7 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name="LostItemListActivity"
-      android:label="失物列表" />
-
+    <activity android:name="LostItemListActivity" android:label="失物列表" />
+    <activity android:name="LostItemActivity" android:label="失物資料" />
   </application>
 </manifest>

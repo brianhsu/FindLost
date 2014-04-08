@@ -1,77 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
   <LinearLayout 
-    android:id="@+id/activityLostItemSearchBar"
     android:orientation="vertical"
-    android:visibility="gone"
-    android:layout_marginTop="10px"
-    android:layout_marginBottom="10px"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <SearchView 
-      android:id="@+id/activityLostItemSearchMustHave"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:queryHint="一定要出現的關鍵字，以空白分隔"
-      android:iconifiedByDefault="false"/>
-
-    <SearchView 
-      android:id="@+id/activityLostItemSearchOptional"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:queryHint="選擇性的關鍵字，以空白分隔"
-      android:iconifiedByDefault="false"/>
-
-  </LinearLayout>
-
-
-  <LinearLayout 
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView 
+      android:text="發票號碼"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:id="@+id/activityLostItemListLoadingIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
+    <TextView 
+      android:id="@+id/activityLostItemInvoiceID"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="OP10304A239503XCA"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
 
-      <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+    <TextView 
+      android:text="受理單位"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+    <RelativeLayout
+      android:paddingTop="25dp"
+      android:paddingBottom="20dp"
+      android:paddingLeft="15dp"
+      android:background="@drawable/background"
+      android:clickable="true"
+      android:onClick="searchDepartment"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content">
       <TextView 
-        android:text="Loading..."
-        android:layout_marginTop="20px"
+        android:paddingTop="5dp"
+        android:id="@+id/activityLostItemDepartment"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="航空警察局保安警察大隊第一隊第二分隊"
+        android:lineSpacingMultiplier="1.3"
+        android:layout_marginRight="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <ListView
-      android:id="@+id/activityLostItemListList"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" /> 
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@android:id/empty"
-      android:orientation="vertical"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center">
-    
-      <TextView android:text="找不到東西耶"
+      <ImageView 
+        android:src="@drawable/ic_detail"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
+    </RelativeLayout>
 
+    <TextView 
+      android:text="拾得日期時間"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemDateTime"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="2014-04-01 10:11"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="拾得地點"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemLocation"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="臺灣桃園國際機場第一航廈入境CI-524班機"
+      android:lineSpacingMultiplier="1.3"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:text="公告內容"
+      android:background="#3d3d3d"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:padding="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <TextView 
+      android:id="@+id/activityLostItemDescription"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:text="拾得人拾獲：平板電腦1.00台，請失主於公告期間六個月內攜帶本人印章及身分證件前來認領。，請失主於公告期間內攜帶本人印章及身分證件前來認領。"
+      android:lineSpacingMultiplier="1.3"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:layout_margin="15dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
   </LinearLayout>
-</LinearLayout>
+</ScrollView>
 

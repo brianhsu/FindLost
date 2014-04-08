@@ -16,7 +16,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.io.FileNotFoundException
 
-case class LostItem(id: String, department: String, dateTime: String, 
+case class LostItem(invoiceID: String, department: String, dateTime: String, 
                     location: String, description: String) 
 {
   private lazy val searchContent = s"$department $dateTime $location $description"
@@ -53,7 +53,7 @@ case class LostItem(id: String, department: String, dateTime: String,
 
   }
 
-  def toLine = raw"""$id,$department,="${dateTime}",$location,$description"""
+  def toLine = raw"""$invoiceID,$department,="${dateTime}",$location,$description"""
 
   def items = {
     description.replace("拾得人拾獲：", "").

@@ -5,23 +5,7 @@
     android:layout_height="fill_parent"
     >
 
-  <LinearLayout
-      android:id="@+id/lostItemListLoadingIndicator"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:gravity="center"
-      android:orientation="vertical">
-
-    <ProgressBar
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
-
-    <TextView 
-      android:text="Loading..."
-      android:layout_marginTop="20dp"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content" />
-  </LinearLayout>
+  <include layout="@layout/module_loading_indicator" />
   <LinearLayout
       android:id="@+id/errorMessageSpace"
       android:layout_width="fill_parent"
@@ -59,7 +43,7 @@
   </LinearLayout>
 
   <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/lostItemList"
+    android:id="@+id/activityMainGroupList"
     android:layout_width="match_parent"
     android:layout_height="match_parent" /> 
 </LinearLayout>
