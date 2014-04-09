@@ -157,6 +157,13 @@ class LostItemListActivity extends Activity with TypedViewHolder
     }
   }
 
+  override def onResume() {
+    super.onResume()
+    adapterHolder.runOnUIThread { adapter =>
+      adapter.updateStarView()
+    }
+  }
+
   override def onContextItemSelected(menuItem: MenuItem): Boolean = menuItem.getItemId match {
     case ContextMenu.AddToStarList => addToStarList(menuItem); true
     case ContextMenu.RemoveFromStarList => removeFromStarList(menuItem); true
