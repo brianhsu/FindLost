@@ -61,6 +61,7 @@ class MineFragment extends Fragment {
     val listView = getView.findView(TR.fragmentMineList)
     val loadingIndicator = getView.findView(TR.moduleLoadingIndicator)
     listView.setAdapter(adapter)
+    listView.setEmptyView(getView.findView(TR.fragmentMineEmpty))
     listView.setOnItemClickListener { position: Int =>
       val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
       LostItemActivity.startActivity(getActivity, lostItem)

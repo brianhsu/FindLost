@@ -78,6 +78,8 @@ class LostItemListActivity extends Activity with TypedViewHolder
     val indicator = findView(TR.moduleLoadingIndicator)
     val listView = findView(TR.activityLostItemListList)
 
+    listView.setEmptyView(findView(TR.activityLostItemListEmpty))
+
     adapterHolder.runOnUIThread { adapter =>
       listView.setAdapter(adapter)
       listView.setFastScrollEnabled(true)
