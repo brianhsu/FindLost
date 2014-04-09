@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">失物招領</string>
+  <string name="appName">失物招領</string>
+  <string name="lostItemListTitle">失物列表</string>
+  <string name="lostItemDetailTitle">失物資料</string>
 
   <string name="queryHintMustHave">一定要出現的關鍵字，以空白分隔</string>
   <string name="queryHintOptional">一定要出現的關鍵字，以空白分隔</string>
