@@ -18,14 +18,14 @@
       android:id="@+id/activityLostItemSearchMustHave"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:queryHint="一定要出現的關鍵字，以空白分隔"
+      android:queryHint="@string/queryHintMustHave"
       android:iconifiedByDefault="false"/>
 
     <SearchView 
       android:id="@+id/activityLostItemSearchOptional"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:queryHint="選擇性的關鍵字，以空白分隔"
+      android:queryHint="@string/queryHintOptional"
       android:iconifiedByDefault="false"/>
 
   </LinearLayout>
@@ -44,13 +44,13 @@
       android:layout_height="match_parent" /> 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@android:id/empty"
+      android:id="@+id/activityLostItemListEmpty"
       android:orientation="vertical"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:gravity="center">
     
-      <TextView android:text="找不到東西耶"
+      <TextView android:text="@string/emptyListNotice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     

@@ -31,7 +31,7 @@ class GroupAdapter(context: Context, groups: List[Group]) extends BaseAdapter
   override def getItemId(position: Int): Long = position
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
 
-    val view = inflater.inflate(R.layout.lost_item_group_row, null)
+    val view = inflater.inflate(R.layout.row_lost_item_group_list, null)
     val rowTitle = view.findView(TR.groupTitle)
     val rowCheckbox = view.findView(TR.groupCheckbox)
     rowTitle.setText(sortedGroup(position).title)

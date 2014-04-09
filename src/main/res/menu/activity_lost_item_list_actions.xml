@@ -3,5 +3,5 @@
     android:showAsAction="always"
     android:onClick="onActionSearchClicked"
     android:icon="@drawable/ic_action_search"
-    android:title="搜尋"/>
+    android:title="@string/search"/>
 </menu>

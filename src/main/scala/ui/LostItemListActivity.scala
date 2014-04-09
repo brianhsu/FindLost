@@ -18,8 +18,6 @@ import AsyncUI._
 object LostItemListActivity {
   val BundleMustHaveKeywords = "org.bone.findlost.mustHaveKeywords"
   val BundleOptionalKeywords = "org.bone.findlost.optionalKeywords"
-
-  val ExtrasLostItem= "org.bone.findlost.lostItem"
 }
 
 class LostItemListActivity extends Activity with TypedViewHolder
@@ -80,14 +78,14 @@ class LostItemListActivity extends Activity with TypedViewHolder
     val indicator = findView(TR.moduleLoadingIndicator)
     val listView = findView(TR.activityLostItemListList)
 
+    listView.setEmptyView(findView(TR.activityLostItemListEmpty))
+
     adapterHolder.runOnUIThread { adapter =>
       listView.setAdapter(adapter)
       listView.setFastScrollEnabled(true)
       listView.setOnItemClickListener { position: Int =>
         val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
-        val intent = new Intent(LostItemListActivity.this, classOf[LostItemActivity])
-        intent.putExtra(LostItemListActivity.ExtrasLostItem, lostItem)
-        startActivity(intent)
+        LostItemActivity.startActivity(LostItemListActivity.this, lostItem)
       }
 
       if (savedInstanceState != null) {
