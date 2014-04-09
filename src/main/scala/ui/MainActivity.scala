@@ -2,10 +2,14 @@ package org.bone.findlost
 
 import android.app.Activity
 import android.os.Bundle
+import android.content.Intent
+
 import android.app.ActionBar
 import android.app.FragmentTransaction
 import android.app.ActionBar.Tab
 import android.app.Fragment
+import android.view.Menu
+import android.view.MenuItem
 
 trait TabInterface {
 
@@ -79,6 +83,17 @@ class MainActivity extends Activity with TypedViewHolder with TabInterface
         clz = classOf[MineFragment]
       )
     }
+  }
+
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    val inflater = getMenuInflater
+    inflater.inflate(R.menu.activity_main_menu, menu)
+    super.onCreateOptionsMenu(menu)
+  }
+
+  def onCCLicenseClicked(menuItem: MenuItem) {
+    val intent = new Intent(this, classOf[CCLicenseActivity])
+    startActivity(intent)
   }
 
 }
