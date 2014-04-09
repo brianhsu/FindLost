@@ -71,6 +71,7 @@ class MineFragment extends Fragment {
       adapter <- adapterHolder
       lostItem <- getLostItem(menuItem.getMenuInfo)
     } {
+      starList.removeFromStarList(lostItem)
       adapter.removeItem(lostItem)
     }
   }
