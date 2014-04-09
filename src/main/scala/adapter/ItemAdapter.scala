@@ -29,7 +29,7 @@ class SectionIndex(val sections: Vector[String], sortedItems: Vector[LostItem]) 
 class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAdapter with Filterable with SectionIndexer
 {
   private lazy val inflater = LayoutInflater.from(context)
-  private lazy val defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
+  private var defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
   private var sortedItems = defaultSortedItems
 
   // SectionIndex API
@@ -39,6 +39,12 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
     sortedItems.map(_.formatedMonthDate).distinct,
     sortedItems
   )
+
+  def removeItem(item: LostItem) {
+    defaultSortedItems = defaultSortedItems.filterNot(_ == item)
+    sortedItems = sortedItems.filterNot(_ == item)
+    notifyDataSetChanged()
+  }
 
   override def getSections = sectionIndex.sections.toArray
   override def getSectionForPosition(position: Int): Int = sectionIndex.sectionForPosition(position)
