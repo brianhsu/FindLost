@@ -30,10 +30,10 @@ class MainActivity extends Activity with TypedViewHolder
     override def onTabReselected(tab: Tab, ft: FragmentTransaction) {}
   }
 
-  private def createTab[T <: Fragment](title: String, fragmentClass: Class[T]) {
+  private def createTab[T <: Fragment](title: String, iconResource: Int, clz: Class[T]) {
     val actionBar = getActionBar
-    val tabListener = new TabListener(this, title, fragmentClass)
-    val tab = actionBar.newTab.setText(title).setTabListener(tabListener)
+    val tabListener = new TabListener(this, title, clz)
+    val tab = actionBar.newTab.setText(title).setIcon(iconResource).setTabListener(tabListener)
     actionBar.addTab(tab)
   }
 
@@ -42,8 +42,8 @@ class MainActivity extends Activity with TypedViewHolder
     val actionBar = getActionBar
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS)
     if (actionBar.getTabCount == 0) {
-      createTab(getString(R.string.lostItemGroupList), classOf[MainFragment])
-      createTab(getString(R.string.possibleMineList), classOf[MineFragment])
+      createTab(getString(R.string.lostItemGroupList), android.R.drawable.ic_menu_view, classOf[MainFragment])
+      createTab(getString(R.string.possibleMineList), android.R.drawable.btn_star_big_on, classOf[MineFragment])
     }
   }
 
