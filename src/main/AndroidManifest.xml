@@ -13,6 +13,8 @@
   <application android:label="@string/appName" android:icon="@drawable/ic_launcher">
     <activity android:name="LostItemListActivity" android:label="@string/lostItemListTitle" />
     <activity android:name="LostItemActivity" android:label="@string/lostItemDetailTitle" />
+    <activity android:name="CCLicenseActivity" android:label="@string/ccLicenseTitle" />
+
     <activity android:name="MainActivity" android:label="@string/appName">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

@@ -3,6 +3,7 @@
   <string name="appName">失物招領</string>
   <string name="lostItemListTitle">失物列表</string>
   <string name="lostItemDetailTitle">失物資料</string>
+  <string name="ccLicenseTitle">CC 素材授權宣告</string>
 
   <string name="queryHintMustHave">一定要出現的關鍵字，以空白分隔</string>
   <string name="queryHintOptional">一定要出現的關鍵字，以空白分隔</string>
@@ -40,5 +41,7 @@
 
   <string name="addToStarList">加入至「可能是我的」清單</string>
   <string name="removeFromStarList">從「可能是我的」清單中移除</string>
+
+  <string name="ccLicense"> CC-3.0 素材授權宣告</string>
 
 </resources>
