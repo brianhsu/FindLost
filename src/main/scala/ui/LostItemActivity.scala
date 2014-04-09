@@ -10,14 +10,26 @@ import android.widget.SearchView
 
 import scala.concurrent._
 import scala.concurrent.duration._
+import android.content.Intent
 
 import AsyncUI._
 
+object LostItemActivity {
+
+  val ExtraLostItem = "org.bone.findlost.lostItem"
+
+  def startActivity(currentActivity: Activity, lostItem: LostItem) {
+    val intent = new Intent(currentActivity, classOf[LostItemActivity])
+    intent.putExtra(ExtraLostItem, lostItem)
+    currentActivity.startActivity(intent)
+  }
+}
+
 class LostItemActivity extends Activity with TypedViewHolder
 {
-  import LostItemListActivity._
+  import LostItemActivity.ExtraLostItem
   
-  private lazy val lostItem = getIntent.getSerializableExtra(ExtrasLostItem).asInstanceOf[LostItem]
+  private lazy val lostItem = getIntent.getSerializableExtra(ExtraLostItem).asInstanceOf[LostItem]
   private lazy val invoiceID = findView(TR.activityLostItemInvoiceID)
   private lazy val department = findView(TR.activityLostItemDepartment)
   private lazy val dateTime = findView(TR.activityLostItemDateTime)

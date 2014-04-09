@@ -85,9 +85,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
       listView.setFastScrollEnabled(true)
       listView.setOnItemClickListener { position: Int =>
         val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
-        val intent = new Intent(LostItemListActivity.this, classOf[LostItemActivity])
-        intent.putExtra(LostItemListActivity.ExtrasLostItem, lostItem)
-        startActivity(intent)
+        LostItemActivity.startActivity(LostItemListActivity.this, lostItem)
       }
 
       if (savedInstanceState != null) {
