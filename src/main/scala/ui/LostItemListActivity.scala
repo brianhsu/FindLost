@@ -9,6 +9,10 @@ import android.view.MenuItem
 import android.widget.SearchView
 import android.widget.AdapterView
 import android.content.Intent
+import android.view.ContextMenu
+import android.view.ContextMenu.ContextMenuInfo
+import android.widget.AdapterView.AdapterContextMenuInfo
+import android.widget.Toast
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -33,6 +37,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
   private lazy val searchMustHave = findView(TR.activityLostItemSearchMustHave)
   private lazy val searchOptional = findView(TR.activityLostItemSearchOptional)
   private lazy val searchBar = findView(TR.activityLostItemSearchBar)
+  private lazy val starList = new StarList(this)
 
   private def getLostItems(selectedGroup: Vector[Group]): Future[Vector[LostItem]] = {
     LostItem.getLostItems(this, selectedGroup.map(_.title).toList)
@@ -109,5 +114,53 @@ class LostItemListActivity extends Activity with TypedViewHolder
 
     setupSearchView(searchMustHave)
     setupSearchView(searchOptional)
+    registerForContextMenu(listView)
   }
+
+  object ContextMenu {
+    val GroupID = 0
+    val AddToStarList = 0
+    val RemoveFromStarList = 1
+  }
+
+  override def onCreateContextMenu(menu: ContextMenu, view: View, menuInfo: ContextMenuInfo) {
+    super.onCreateContextMenu(menu, view, menuInfo)
+    val adapter = adapterHolder.value.get.get
+    val position = menuInfo.asInstanceOf[AdapterContextMenuInfo].position
+    val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
+
+    starList.isInStarList(lostItem) match {
+      case false => menu.add(ContextMenu.GroupID, ContextMenu.AddToStarList, 0, R.string.addToStarList)
+      case true => menu.add(ContextMenu.GroupID, ContextMenu.RemoveFromStarList, 0, R.string.removeFromStarList)
+    }
+
+    menu.setHeaderTitle(lostItem.items)
+  }
+
+  def removeFromStarList(menuItem: MenuItem) {
+    adapterHolder.runOnUIThread { adapter =>
+      val position = menuItem.getMenuInfo.asInstanceOf[AdapterContextMenuInfo].position
+      val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
+      starList.removeFromStarList(lostItem)
+      adapter.updateStarView()
+      Toast.makeText(this, R.string.removedFromStarList, Toast.LENGTH_SHORT).show()
+    }
+  }
+
+  def addToStarList(menuItem: MenuItem) {
+    adapterHolder.runOnUIThread { adapter =>
+      val position = menuItem.getMenuInfo.asInstanceOf[AdapterContextMenuInfo].position
+      val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
+      starList.insertToStarList(lostItem)
+      adapter.updateStarView()
+      Toast.makeText(this, R.string.addedToStarList, Toast.LENGTH_SHORT).show()
+    }
+  }
+
+  override def onContextItemSelected(menuItem: MenuItem): Boolean = menuItem.getItemId match {
+    case ContextMenu.AddToStarList => addToStarList(menuItem); true
+    case ContextMenu.RemoveFromStarList => removeFromStarList(menuItem); true
+    case _ => super.onContextItemSelected(menuItem)
+  }
+
 }

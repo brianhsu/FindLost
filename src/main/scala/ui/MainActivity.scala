@@ -7,7 +7,29 @@ import android.app.FragmentTransaction
 import android.app.ActionBar.Tab
 import android.app.Fragment
 
-class MainActivity extends Activity with TypedViewHolder
+trait TabInterface {
+
+  this: MainActivity =>
+
+  def removeTab() {
+    if (getActionBar != null && getActionBar.getTabCount >= 2) {
+      getActionBar.removeTabAt(1)
+    }
+  }
+
+  def addTab() {
+    if (getActionBar != null && getActionBar.getTabCount == 1) {
+      createTab(
+        title = getString(R.string.possibleMineList), 
+        iconResource = android.R.drawable.btn_star_big_on, 
+        clz = classOf[MineFragment]
+      )
+    }
+  }
+
+}
+
+class MainActivity extends Activity with TypedViewHolder with TabInterface
 {
   class TabListener[T <: Fragment](activity: Activity, tag: String, 
                                    clz: Class[T]) extends ActionBar.TabListener {
@@ -30,7 +52,7 @@ class MainActivity extends Activity with TypedViewHolder
     override def onTabReselected(tab: Tab, ft: FragmentTransaction) {}
   }
 
-  private def createTab[T <: Fragment](title: String, iconResource: Int, clz: Class[T]) {
+  protected def createTab[T <: Fragment](title: String, iconResource: Int, clz: Class[T]) {
     val actionBar = getActionBar
     val tabListener = new TabListener(this, title, clz)
     val tab = actionBar.newTab.setText(title).setIcon(iconResource).setTabListener(tabListener)
@@ -39,11 +61,23 @@ class MainActivity extends Activity with TypedViewHolder
 
   override def onCreate(savedInstanceState: Bundle)  {
     super.onCreate(savedInstanceState)
+
     val actionBar = getActionBar
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS)
+
     if (actionBar.getTabCount == 0) {
-      createTab(getString(R.string.lostItemGroupList), android.R.drawable.ic_menu_view, classOf[MainFragment])
-      createTab(getString(R.string.possibleMineList), android.R.drawable.btn_star_big_on, classOf[MineFragment])
+
+      createTab(
+        title = getString(R.string.lostItemGroupList), 
+        iconResource = android.R.drawable.ic_menu_view, 
+        clz = classOf[MainFragment]
+      )
+
+      createTab(
+        title = getString(R.string.possibleMineList), 
+        iconResource = android.R.drawable.btn_star_big_on, 
+        clz = classOf[MineFragment]
+      )
     }
   }
 

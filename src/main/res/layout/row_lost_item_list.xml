@@ -4,13 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <TextView android:id="@+id/lostItemListTitle" 
-    android:layout_margin="15px"
-    android:textSize="20dp"
-    android:lineSpacingMultiplier="1.3"
+  <LinearLayout android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    android:layout_height="match_parent">
 
+    <ImageView 
+      android:id="@+id/lostItemListStar"
+      android:src="@drawable/ic_action_important_color"
+      android:adjustViewBounds="true"
+      android:scaleType="fitCenter"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent" />
+
+
+    <TextView android:id="@+id/lostItemListTitle" 
+      android:layout_margin="15px"
+      android:textSize="20dp"
+      android:lineSpacingMultiplier="1.3"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+  </LinearLayout>
   <TextView android:id="@+id/lostItemListDate" 
     android:layout_marginTop="10px"
     android:text="YYYY-mm-dd HH:ss"

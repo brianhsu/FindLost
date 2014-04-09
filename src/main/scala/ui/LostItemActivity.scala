@@ -11,6 +11,7 @@ import android.widget.SearchView
 import scala.concurrent._
 import scala.concurrent.duration._
 import android.content.Intent
+import android.widget.Toast
 
 import AsyncUI._
 
@@ -44,9 +45,12 @@ class LostItemActivity extends Activity with TypedViewHolder
       case false => 
         starList.insertToStarList(lostItem) 
         actionStar.setIcon(R.drawable.ic_action_important_color)
+        Toast.makeText(this, R.string.addedToStarList, Toast.LENGTH_SHORT).show()
       case true => 
         starList.removeFromStarList(lostItem); 
         actionStar.setIcon(R.drawable.ic_action_important)
+        Toast.makeText(this, R.string.removedFromStarList, Toast.LENGTH_SHORT).show()
+
     }
   }
 
