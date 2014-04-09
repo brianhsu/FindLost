@@ -142,6 +142,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
       val position = menuItem.getMenuInfo.asInstanceOf[AdapterContextMenuInfo].position
       val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
       starList.removeFromStarList(lostItem)
+      adapter.updateStarView()
       Toast.makeText(this, R.string.removedFromStarList, Toast.LENGTH_SHORT).show()
     }
   }
@@ -151,6 +152,7 @@ class LostItemListActivity extends Activity with TypedViewHolder
       val position = menuItem.getMenuInfo.asInstanceOf[AdapterContextMenuInfo].position
       val lostItem = adapter.getItem(position).asInstanceOf[LostItem]
       starList.insertToStarList(lostItem)
+      adapter.updateStarView()
       Toast.makeText(this, R.string.addedToStarList, Toast.LENGTH_SHORT).show()
     }
   }

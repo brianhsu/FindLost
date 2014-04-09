@@ -31,6 +31,7 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
   private lazy val inflater = LayoutInflater.from(context)
   private var defaultSortedItems = lostItems.sortWith(_.formatedDateTime > _.formatedDateTime)
   private var sortedItems = defaultSortedItems
+  private lazy val starList = new StarList(context)
 
   // SectionIndex API
   private var sectionIndex = updateSectionIndex
@@ -102,19 +103,37 @@ class ItemAdapter(context: Context, lostItems: Vector[LostItem]) extends BaseAda
   override def getView(position: Int, convertView: View, parent: ViewGroup): View = {
     val view = convertView match {
       case view: View => convertView
-      case _ => inflater.inflate(R.layout.row_lost_item_list, null)
+      case _ => 
+        val view = inflater.inflate(R.layout.row_lost_item_list, null)
+        val viewTag = new ViewTag(
+          title = view.findView(TR.lostItemListTitle),
+          location = view.findView(TR.lostItemListLocation),
+          date = view.findView(TR.lostItemListDate),
+          star = view.findView(TR.lostItemListStar)
+        )
+        view.setTag(viewTag)
+        view
     }
 
     val item = sortedItems(position)
-    val rowTitle = view.findView(TR.lostItemListTitle)
-    val rowLocation = view.findView(TR.lostItemListLocation)
-    val rowDate = view.findView(TR.lostItemListDate)
-
-    rowTitle.setText(item.items)
-    rowLocation.setText(item.location)
-    rowDate.setText(item.formatedDateTime)
-
+    val viewTag = view.getTag.asInstanceOf[ViewTag]
+    viewTag.title.setText(item.items)
+    viewTag.location.setText(item.location)
+    viewTag.date.setText(item.formatedDateTime)
+    starList.isInStarList(item) match {
+      case false => viewTag.star.setVisibility(View.GONE)
+      case true => viewTag.star.setVisibility(View.VISIBLE)
+    }
     view
   }
+
+  def updateStarView() = {
+    notifyDataSetChanged()
+  }
 }
+
+import android.widget.TextView
+import android.widget.ImageView
+
+case class ViewTag(title: TextView, location: TextView, date: TextView, star: ImageView)
 
