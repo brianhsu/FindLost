@@ -30,5 +30,8 @@
   <string name="mobileWarningConfirm">繼續使用</string>
   <string name="mobileWarningCancel">關閉此程式</string>
 
+  <string name="lostItemGroupList">失物列表</string>
+  <string name="possibleMineList">可能是我的</string>
+
 
 </resources>
