@@ -33,5 +33,7 @@
   <string name="lostItemGroupList">失物列表</string>
   <string name="possibleMineList">可能是我的</string>
 
+  <string name="addedToStarList">已加入至「可能是我的」清單</string>
+  <string name="removedFromStarList">已從「可能是我的」清單中移除</string>
 
 </resources>
