@@ -2,75 +2,90 @@ package org.bone.findlost
 
 import android.app.Activity
 import android.app.AlertDialog
-
-import android.os.Bundle
-import android.content.Context
+import android.app.Fragment
 import android.content.Intent
+import android.content.DialogInterface
+import android.os.Bundle
 import android.view.View
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.AdapterView
+import android.view.MenuInflater
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Toast
-
+import android.util.Log
+ 
 import scala.concurrent._
-import scala.concurrent.duration._
-import android.content.DialogInterface
 
 import AsyncUI._
-import android.util.Log
+import CallbackConversions._
+import TypedResource._
 
-class MainActivity extends Activity with TypedViewHolder
+class MainFragment extends Fragment 
 {
   import LostItem._
   import CallbackConversions._
 
-  private implicit val runOnUIActivity = this
+  private implicit def runOnUIActivity = getActivity
 
   private var actionShowDetailHolder: Option[MenuItem] = None
-  private lazy val indicator = findView(TR.moduleLoadingIndicator)
-  private lazy val errorMessageRetryButton = findView(TR.errorMessageRetryButton)
-  private lazy val errorMessageSpace = findView(TR.errorMessageSpace)
-  private lazy val listView = findView(TR.activityMainGroupList)
+
+  private var viewHolder: Option[View] = None
+  private lazy val indicator = getView.findView(TR.moduleLoadingIndicator)
+  private lazy val errorMessageRetryButton = getView.findView(TR.errorMessageRetryButton)
+  private lazy val errorMessageSpace = getView.findView(TR.errorMessageSpace)
+  private lazy val listView = getView.findView(TR.fragmentMainGroupList)
 
   private var adapterHolder: Future[GroupAdapter] = _
   private var allowMobileData: Boolean = false
   private var isLoading: Boolean = false
 
+  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
+    val view = viewHolder.getOrElse(inflater.inflate(R.layout.fragment_main, container, false))
+    viewHolder = Some(view)
+    view
+  }
+
   private def loadingData(isRefresh: Boolean): Future[GroupAdapter] = {
-    val lostItemsFuture = LostItem.getLostItemData(this, allowMobileData, isRefresh)
+
+    val lostItemsFuture = LostItem.getLostItemData(getActivity, allowMobileData, isRefresh)
+
     lostItemsFuture.map { groups =>
-      new GroupAdapter(this, groups)
+      new GroupAdapter(getActivity, groups)
     }
   }
 
   private def setupGroupList(isRefresh: Boolean = false) {
+    Log.v("FindLost", "setupGroupList:" + isRefresh)
     this.isLoading = true
     indicator.setVisibility(View.VISIBLE)
     adapterHolder = loadingData(isRefresh)
-    adapterHolder.runOnUIThread { adapter => showDateGroupListView(adapter) }
+    adapterHolder.runOnUIThread { adapter => 
+      showDateGroupListView(adapter) 
+    }
     adapterHolder.onFailure { 
-      case UsingMobileConnectionException => this.runOnUIThread { showMobileNetworkWarning() }
-      case e: Exception => this.runOnUIThread { displayErrorMessage(e) }
+      case UsingMobileConnectionException => this.runOnUIThread { Log.v("FindLost", "UsingMobileConnectionException"); showMobileNetworkWarning() }
+      case e: Exception => this.runOnUIThread { Log.v("FindLost", "error:" + e, e); displayErrorMessage(e) }
     }
   }
 
   private def showMobileNetworkWarning() {
-    val alertDialog = new AlertDialog.Builder(this)
+    val alertDialog = new AlertDialog.Builder(getActivity)
     alertDialog.setTitle(R.string.mobileWarningTitle)
     alertDialog.setMessage(R.string.mobileWarningContent)
     alertDialog.setCancelable(false)
     alertDialog.setPositiveButton(R.string.mobileWarningConfirm, 
       new DialogInterface.OnClickListener() {
         override def onClick(dialog: DialogInterface, which: Int) {
-        MainActivity.this.allowMobileData = true
-        MainActivity.this.setupGroupList()
+          MainFragment.this.allowMobileData = true
+          MainFragment.this.setupGroupList()
         }
       }
     )
     alertDialog.setNegativeButton(R.string.mobileWarningCancel, 
       new DialogInterface.OnClickListener() {
         override def onClick(dialog: DialogInterface, which: Int) {
-          MainActivity.this.finish()
+          getActivity.finish()
         }
       }
     )
@@ -80,12 +95,14 @@ class MainActivity extends Activity with TypedViewHolder
 
   private def displayErrorMessage(exception: Exception) 
   {
-    val message = findView(TR.errorMessageContent)
+    val message = getView.findView(TR.errorMessageContent)
+    val retryButton = getView.findView(TR.errorMessageRetryButton)
     setLoadingIndicatorState(false)
     errorMessageSpace.setVisibility(View.VISIBLE)
     errorMessageRetryButton.setEnabled(true)
+    retryButton.setOnClickListener { view: View => onRetryClicked() }
     message.setText(R.string.downloadErrorMessage)
-    Toast.makeText(this, getString(R.string.errorCause) + exception.getMessage, Toast.LENGTH_LONG).show()
+    Toast.makeText(getActivity, getString(R.string.errorCause) + exception.getMessage, Toast.LENGTH_LONG).show()
   }
 
   private def disableErrorMessage() {
@@ -116,38 +133,50 @@ class MainActivity extends Activity with TypedViewHolder
     actionShowDetailHolder.foreach(_.setEnabled(isEnabled).setVisible(isEnabled))
   }
 
-  override def onCreateOptionsMenu(menu: Menu): Boolean = {
-    val inflater = getMenuInflater
-    inflater.inflate(R.menu.main_activity_actions, menu)
-    actionShowDetailHolder = Option(menu.findItem(R.id.mainActivityActionShowDetail)).map(_.asInstanceOf[MenuItem])
+  override def onOptionsItemSelected(item: MenuItem): Boolean = {
+    item.getItemId match {
+      case R.id.mainFragmentActionRefresh => onActionRefreshClicked(); true
+      case R.id.mainFragmentActionShowDetail => onActionShowDetailClicked(); true
+      case _ => super.onOptionsItemSelected(item)
+    }
+  }
+
+  override def onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    inflater.inflate(R.menu.main_fragment_actions, menu)
+    actionShowDetailHolder = Option(menu.findItem(R.id.mainFragmentActionShowDetail)).map(_.asInstanceOf[MenuItem])
     setActionShowDetailEnabled(false)
-    super.onCreateOptionsMenu(menu)
   }
 
-  override def onCreate(savedInstanceState: Bundle)  {
+  override def onCreate(savedInstanceState: Bundle) {
+    setHasOptionsMenu(true)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+  }
+
+  override def onResume()  {
+    super.onResume()
     setupGroupList()
   }
 
-  def onRetryClicked(view: View) {
+  def onRetryClicked() {
     this.errorMessageRetryButton.setEnabled(false)
-    setupGroupList()
+    setupGroupList(true)
   }
 
-  def onActionShowDetailClicked(menuItem: MenuItem) {
+  def onActionShowDetailClicked() {
     adapterHolder.runOnUIThread { adapter =>
       val selectedGroups = adapter.getSelectedGroups
-      val intent = new Intent(this, classOf[LostItemListActivity])
+      val intent = new Intent(getActivity, classOf[LostItemListActivity])
       intent.putExtra("org.bone.findlost.selectedGroups", selectedGroups)
       startActivity(intent)
     }
   }
 
-  def onActionRefreshClicked(menuItem: MenuItem) {
+  def onActionRefreshClicked() {
     if (!isLoading) {
       setupGroupList(true)
     }
   }
 
 }
+
+

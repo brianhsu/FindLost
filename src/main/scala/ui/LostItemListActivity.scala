@@ -18,8 +18,6 @@ import AsyncUI._
 object LostItemListActivity {
   val BundleMustHaveKeywords = "org.bone.findlost.mustHaveKeywords"
   val BundleOptionalKeywords = "org.bone.findlost.optionalKeywords"
-
-  val ExtrasLostItem= "org.bone.findlost.lostItem"
 }
 
 class LostItemListActivity extends Activity with TypedViewHolder

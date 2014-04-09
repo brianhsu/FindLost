@@ -71,13 +71,6 @@ class MineFragment extends Fragment {
 
 }
 
-class ListFragment extends Fragment {
-  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
-    inflater.inflate(R.layout.fragment_list, container, false)
-  }
-}
-
-
 class TempActivity extends Activity with TypedViewHolder
 {
   private def createTab[T <: Fragment](title: String, fragmentClass: Class[T]) {
@@ -92,7 +85,7 @@ class TempActivity extends Activity with TypedViewHolder
     val actionBar = getActionBar
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS)
     if (actionBar.getTabCount == 0) {
-      createTab("失物列表", classOf[ListFragment])
+      createTab("失物列表", classOf[MainFragment])
       createTab("可能是我的", classOf[MineFragment])
     }
   }

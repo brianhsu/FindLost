@@ -5,9 +5,18 @@ import language.implicitConversions
 import android.view.View
 import android.widget.SearchView
 import android.widget.AdapterView
+import android.view.View
 
 object CallbackConversions
 {
+  implicit def toOnClickListener(callback: View => Any) = {
+    new View.OnClickListener {
+      override def onClick(view: View) {
+        callback(view)
+      }
+    }
+  }
+
   implicit def toAdapterOnItemClicked(callback: Int => Any) = {
     new AdapterView.OnItemClickListener() {
       override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long) {
