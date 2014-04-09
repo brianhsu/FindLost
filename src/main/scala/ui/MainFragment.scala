@@ -58,14 +58,25 @@ class MainFragment extends Fragment
   private def setupGroupList(isRefresh: Boolean = false) {
     Log.v("FindLost", "setupGroupList:" + isRefresh)
     this.isLoading = true
+    val tabInterface = getActivity.asInstanceOf[TabInterface]
+    tabInterface.removeTab()
     indicator.setVisibility(View.VISIBLE)
     adapterHolder = loadingData(isRefresh)
     adapterHolder.runOnUIThread { adapter => 
       showDateGroupListView(adapter) 
+      tabInterface.addTab()
     }
     adapterHolder.onFailure { 
-      case UsingMobileConnectionException => this.runOnUIThread { Log.v("FindLost", "UsingMobileConnectionException"); showMobileNetworkWarning() }
-      case e: Exception => this.runOnUIThread { Log.v("FindLost", "error:" + e, e); displayErrorMessage(e) }
+      case UsingMobileConnectionException => this.runOnUIThread { 
+        Log.v("FindLost", "UsingMobileConnectionException")
+        showMobileNetworkWarning()
+        tabInterface.addTab() 
+      }
+      case e: Exception => this.runOnUIThread { 
+        Log.v("FindLost", "error when loading data:" + e, e)
+        displayErrorMessage(e)
+        tabInterface.addTab() 
+      }
     }
   }
 
