@@ -6,7 +6,7 @@
   <string name="ccLicenseTitle">CC 素材授權宣告</string>
 
   <string name="queryHintMustHave">一定要出現的關鍵字，以空白分隔</string>
-  <string name="queryHintOptional">一定要出現的關鍵字，以空白分隔</string>
+  <string name="queryHintOptional">過濾用關鍵字，以空白分隔</string>
   <string name="emptyListNotice">找不到東西耶</string>
 
   <string name="invoiceIDTitle">發票號碼</string>
