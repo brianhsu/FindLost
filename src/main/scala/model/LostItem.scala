@@ -71,14 +71,22 @@ object LostItem {
   val NoNetworkException = new Exception("No active network")
 
   val LostItemCacheFileDir = "cachedFile"
-  val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
+  //val DataSourceURL = "http://data.moi.gov.tw/DownLoadFile.aspx?sn=44&type=CSV&nid=7317"
+  val DataSourceURL = "http://data.moi.gov.tw/MoiOD/System/DownloadFile.aspx?DATA=8F2A687B-6FBF-42E7-AD9E-459CD4C8EBE5"
 
   def apply(line: String): Option[LostItem] = {
     line.split(",").toList match {
+      case id :: department :: department2 :: department3 :: rawDateTime :: location :: description :: Nil => 
+        Some(new LostItem(id, department + department2 + department3, rawDateTime.substring(2, 14), location, description))
+      case id :: department :: department2 :: department3 :: rawDateTime :: location :: rest =>
+      	println("rawDateTime:" + rawDateTime)
+        Some(new LostItem(id, department + department2 + department3, rawDateTime.substring(2, 14), location, rest.mkString))
       case id :: department :: rawDateTime :: location :: description :: Nil => 
         Some(new LostItem(id, department, rawDateTime.substring(2, 14), location, description))
       case id :: department :: rawDateTime :: location :: rest =>
+      	println("rawDateTime:" + rawDateTime)
         Some(new LostItem(id, department, rawDateTime.substring(2, 14), location, rest.mkString))
+
       case _ => None
     }
   }
@@ -160,9 +168,12 @@ object LostItem {
       throw IncorrectFormatException
     } else {
       val source = Source.fromInputStream(connection.getInputStream)("UTF-8")
-      val lostItemsLines = source.getLines.toList
-      val lostItems = lostItemsLines.flatMap(line => LostItem(line))
-      val sortedItems = lostItems.sortWith(_.dateTime > _.dateTime)
+      val lostItemsLines = source.getLines
+      val lostItems = lostItemsLines.flatMap { line =>
+      	println("========> " + line)
+      	LostItem(line)
+      }
+      val sortedItems = lostItems.toList.sortWith(_.dateTime > _.dateTime)
       val groupedItems = sortedItems.groupBy(_.formatedDate)
 
       groupedItems.foreach { case(date, items) =>
